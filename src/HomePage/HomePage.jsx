@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
-import { connect } from 'react-redux';
 
 // css
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -8,7 +7,6 @@ import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -235,19 +233,7 @@ class HomePage extends React.Component {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <h1>Product</h1>
-            <Typography paragraph>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-              ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-              facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-              gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-              donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-              adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-              Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-              imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-              arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-              donec massa sapien faucibus et molestie ac.
-            </Typography>
+            {this.props.children}
           </Container>
         </main>
       </div>
@@ -259,9 +245,5 @@ class HomePage extends React.Component {
 
 // <Link to="/login">Logout</Link>
 
-function mapState(state) {
-    const { authentication } = state;
-    return { authentication };
-}
-const connectedHomePage = connect(mapState,)(withStyles(styles)(HomePage));
+const connectedHomePage = (withStyles(styles)(HomePage));
 export { connectedHomePage as HomePage };
