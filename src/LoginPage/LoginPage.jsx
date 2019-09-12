@@ -3,7 +3,80 @@ import { connect } from 'react-redux';
 
 import { userActions } from '../_actions';
 
+// styles
+
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import Card from '@material-ui/core/Card';
+import { withStyles } from '@material-ui/styles';
+
+const styles = theme => ({
+  '@global': {
+    body: {
+      backgroundColor: '#0F273E',
+    },
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingTop: '20%',
+    paddingLeft: '10%',
+    paddingRight: '10%',
+    paddingBottom: '20%',
+  },
+  form: {
+    marginTop: theme.spacing(5),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+    padding: 15,
+  },
+});
+
+const RoundedTextField = withStyles({
+  root: {
+    '& label.Mui-focused': {
+      color: '#0079EA',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: '#0079EA',
+      borderRadius: 25,
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: '#0079EA',
+        borderRadius: 25,
+      },
+      '&:hover fieldset': {
+        borderColor: '#0079EA',
+        borderRadius: 25,
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#0079EA',
+        borderRadius: 25,
+      },
+    },
+  },
+})(TextField);
+
+const StyledButton = withStyles({
+  root: {
+    background: '#0079EA',
+    borderRadius: 25,
+    border: 0,
+  },
+  label: {
+    textTransform: 'capitalize',
+  },
+})(Button);
+
 class LoginPage extends React.Component {
+
     constructor(props) {
         super(props);
 
@@ -13,9 +86,8 @@ class LoginPage extends React.Component {
         this.state = {
             username: '',
             password: '',
-            submitted: false
+            submitted: false,
         };
-
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -37,29 +109,58 @@ class LoginPage extends React.Component {
 
     render() {
         const { username, password, submitted } = this.state;
+        const { classes } = this.props;
         return (
-            <div className="col-md-6 col-md-offset-3">
-                <h2>Login</h2>
-                <form name="form" onSubmit={this.handleSubmit}>
-                    <div className={'form-group' + (submitted && !username ? ' has-error' : '')}>
-                        <label htmlFor="username">Username</label>
-                        <input type="text" className="form-control" name="username" value={username} onChange={this.handleChange} />
-                        {submitted && !username &&
-                            <div className="help-block">Username is required</div>
-                        }
-                    </div>
-                    <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
-                        <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" name="password" value={password} onChange={this.handleChange} />
-                        {submitted && !password &&
-                            <div className="help-block">Password is required</div>
-                        }
-                    </div>
-                    <div className="form-group">
-                        <button className="btn btn-primary">Login</button>
-                    </div>
-                </form>
-            </div>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <Card className={classes.paper}>
+              <Typography component="h1" variant="h5" style={{color:'#0079EA'}}>
+                Nature Food
+              </Typography>
+              <form className={classes.form} noValidate name="form" onSubmit={this.handleSubmit}>
+                <RoundedTextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="email"
+                  type="text"
+                  value={username}
+                  onChange={this.handleChange}
+                  helperText={submitted && !username && "Username is required"}
+                  error={submitted && !username}
+                  autoFocus
+                />
+                <RoundedTextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={this.handleChange}
+                  helperText={submitted && !password && "Password is required"}
+                  error={submitted && !password}
+                />
+                <StyledButton
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  LOGIN
+                </StyledButton>
+              </form>
+            </Card>
+          </Container>
         );
     }
 }
@@ -74,5 +175,5 @@ const actionCreators = {
     logout: userActions.logout
 };
 
-const connectedLoginPage = connect(mapState, actionCreators)(LoginPage);
+const connectedLoginPage = connect(mapState, actionCreators)(withStyles(styles)(LoginPage));
 export { connectedLoginPage as LoginPage };
