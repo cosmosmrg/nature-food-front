@@ -19,9 +19,8 @@ class HomePage extends React.Component {
 }
 
 function mapState(state) {
-    const { users, authentication } = state;
-    const { user } = authentication;
-    return { user, users };
+    const { authentication } = state;
+    return { authentication };
 }
 const connectedHomePage = connect(mapState,)(HomePage);
 export { connectedHomePage as HomePage };

@@ -11,13 +11,11 @@ function login(username, password) {
     };
     return fetch(process.env.REACT_APP_LOGIN_DOMAIN, requestOptions)
         .then(handleResponse)
-        .then(user => {
+        .then(token => {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
-            console.log("user",user);
-            console.log("token",JSON.stringify({"token":user}));
-            localStorage.setItem('user', JSON.stringify({"token":user}));
+            localStorage.setItem('user', JSON.stringify({"token":token}));
 
-            return user;
+            return {"token":token};
         });
 }
 
@@ -28,7 +26,6 @@ function logout() {
 
 function handleResponse(response) {
     return response.text().then(text => {
-        console.log("text",text);
         const data = text;
         if (!response.ok) {
             if (response.status === 401) {
