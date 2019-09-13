@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
+import { Router, Route,Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { history } from '../_helpers';
@@ -29,7 +29,8 @@ class App extends React.Component {
                         }
                         <Router history={history}>
                             <div>
-                                <PrivateRoute exact path="/" component={ProductPage} title="product"/>
+                                <Route exact path="/" render={() => (<Redirect to="/product"/>)}/>
+                                <PrivateRoute exact path="/product" component={ProductPage} title="product"/>
                                 <Route path="/login" component={LoginPage} />
                             </div>
                         </Router>
