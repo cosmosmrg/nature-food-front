@@ -113,6 +113,11 @@ const styles = theme => ({
     paddingLeft: '10%',
     color:'white',
   },
+  listItemSelected:{
+    paddingLeft: '10%',
+    color:'white',
+    backgroundColor:'#657584',
+  },
   whiteIcon:{
     color:'white',
   },
@@ -171,8 +176,39 @@ class HomePage extends React.Component {
 
 
   render() {
-    const { classes } = this.props;
-
+    const { classes, title } = this.props;
+    const routes = [
+      {
+        key: 'product',
+        text: 'PRODUCT',
+        icon: <InboxIcon />
+      },
+      {
+        key: 'order',
+        text: 'ORDER',
+        icon: <InboxIcon />,
+      },
+      {
+        key: 'package',
+        text: 'PACKAGE',
+        icon: <InboxIcon />,
+      },
+      {
+        key: 'user',
+        text: 'USER',
+        icon: <InboxIcon />,
+      },
+      {
+        key: 'bank_slip',
+        text: 'BANK SLIP',
+        icon: <InboxIcon />,
+      },
+      {
+        key: 'report',
+        text: 'REPORT',
+        icon: <InboxIcon />,
+      },
+    ]
     return (
       <div className={classes.root}>
         <CssBaseline />
@@ -204,30 +240,14 @@ class HomePage extends React.Component {
           </Typography>
           <Divider />
             <List>
-              <ListItem className={classes.listItem} button key={'PRODUCT'}>
-                <ListItemIcon className={classes.whiteIcon}><InboxIcon /></ListItemIcon>
-                <ListItemText primary={'PRODUCT'} />
-              </ListItem>
-              <ListItem className={classes.listItem} button key={'ORDER'}>
-                <ListItemIcon className={classes.whiteIcon}><InboxIcon /></ListItemIcon>
-                <ListItemText primary={'ORDER'} />
-              </ListItem>
-              <ListItem className={classes.listItem} button key={'PACKAGE'}>
-                <ListItemIcon className={classes.whiteIcon}><InboxIcon /></ListItemIcon>
-                <ListItemText primary={'PACKAGE'} />
-              </ListItem>
-              <ListItem className={classes.listItem} button key={'USER'}>
-                <ListItemIcon className={classes.whiteIcon}><InboxIcon /></ListItemIcon>
-                <ListItemText primary={'USER'} />
-              </ListItem>
-              <ListItem className={classes.listItem} button key={'BANK SLIP'}>
-                <ListItemIcon className={classes.whiteIcon}><InboxIcon /></ListItemIcon>
-                <ListItemText primary={'BANK SLIP'} />
-              </ListItem>
-              <ListItem className={classes.listItem} button key={'REPORT'}>
-                <ListItemIcon className={classes.whiteIcon}><InboxIcon /></ListItemIcon>
-                <ListItemText primary={'REPORT'} />
-              </ListItem>
+              {
+                routes.map((item,idex) => (
+                  <ListItem className={title === item.key? classes.listItemSelected :classes.listItem} button key={item.key}>
+                    <ListItemIcon className={classes.whiteIcon}>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItem>)
+                )
+              }
             </List>
         </Drawer>
         <main className={classes.content}>
