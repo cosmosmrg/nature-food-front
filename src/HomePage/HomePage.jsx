@@ -62,7 +62,7 @@ const styles = theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    backgroundColor:'transparent',
+    backgroundColor:'#fafafa',
     boxShadow:'5px 5px 5px rgba(0,0,0,0)',
   },
   menuButton: {
@@ -199,7 +199,7 @@ class HomePage extends React.Component {
         icon: <InboxIcon />,
       },
       {
-        key: 'bank_slip',
+        key: 'bank-slip',
         text: 'BANK SLIP',
         icon: <InboxIcon />,
       },
@@ -242,7 +242,12 @@ class HomePage extends React.Component {
             <List>
               {
                 routes.map((item,idex) => (
-                  <ListItem className={title === item.key? classes.listItemSelected :classes.listItem} button key={item.key}>
+                  <ListItem
+                    className={title === item.key? classes.listItemSelected :classes.listItem}
+                    button
+                    key={item.key}
+                    component={Link} to={`/${item.key}`}
+                    >
                     <ListItemIcon className={classes.whiteIcon}>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.text} />
                   </ListItem>)

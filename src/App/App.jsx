@@ -6,6 +6,11 @@ import { history } from '../_helpers';
 import { alertActions } from '../_actions';
 import { PrivateRoute } from '../_components';
 import { ProductPage } from '../ProductPage';
+import { OrderPage } from '../OrderPage';
+import { PackagePage } from '../PackagePage';
+import { UserPage } from '../UserPage';
+import { BankSlipPage } from '../BankSlipPage';
+import { ReportPage } from '../ReportPage';
 import { LoginPage } from '../LoginPage';
 
 class App extends React.Component {
@@ -31,6 +36,11 @@ class App extends React.Component {
                             <div>
                                 <Route exact path="/" render={() => (<Redirect to="/product"/>)}/>
                                 <PrivateRoute exact path="/product" component={ProductPage} title="product"/>
+                                <PrivateRoute exact path="/order" component={OrderPage} title="order"/>
+                                <PrivateRoute exact path="/package" component={PackagePage} title="package"/>
+                                <PrivateRoute exact path="/user" component={UserPage} title="user"/>
+                                <PrivateRoute exact path="/bank-slip" component={BankSlipPage} title="bank-slip"/>
+                                <PrivateRoute exact path="/report" component={ReportPage} title="report"/>
                                 <Route path="/login" component={LoginPage} />
                             </div>
                         </Router>
