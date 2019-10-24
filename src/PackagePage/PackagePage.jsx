@@ -5,13 +5,17 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
+import Typography from '@material-ui/core/Typography';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 
 
+
 import { withStyles } from '@material-ui/styles';
+import DialogDetailComponent from '../DialogDetailComponent'
+import { dataService } from '../_services/data.service'
 
 export const styles = theme => ({
   root: {
@@ -44,65 +48,53 @@ const statusColor = {
   Complete: '#5e9c5a'
 }
 
-const columns = [
-  { id: 'orderNo', label: 'รหัสสินค้า', minWidth: 100 },
-  { id: 'transDate', label: 'วันที่ทำรายการ', minWidth: 100 },
-  {
-    id: 'buyer',
-    label: 'ชื่อผู้ชื้อ',
-    minWidth: 200,
-    align: 'left',
-  },
-  {
-    id: 'transportWeek',
-    label: 'อาทิตย์ที่จัดส่ง',
-    minWidth: 80,
-    align: 'left',
-  },
-  {
-    id: 'status',
-    label: 'สถานะ',
-    minWidth: 120,
-    align: 'center',
-    special: value => 
-      <Fab size="small" onClick={statusDetail} variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor[value], color: 'white', textTransform: 'inherit', width: '100px'}}>
-        {value}
-      </Fab>
-  },
-];
-
-function createData(orderNo, transDate,  buyer, transportWeek, status) {
-  return { orderNo, transDate,  buyer, transportWeek, status };
-}
-
-function statusDetail(staus) {
-  alert('in progress');
-}
-
-
-const rows = [
-  createData('AA123', '10 June 2019', 'User A', 1, 'Pending'),
-  createData('AA122', '10 June 2019', 'User A', 2, 'Complete'),
-  createData('AA121', '10 June 2019', 'User A', 1, 'Ongoing'),
-  createData('AA125', '9 June 2019', 'User A', 1, 'Ongoing'),
-  createData('AA126', '9 June 2019', 'User A', 3, 'Ongoing'),
-  createData('AA127', '9 June 2019', 'User A', 3, 'Complete'),
-  createData('AA128', '8 June 2019', 'User A', 3, 'Ongoing'),
-  createData('AA129', '8 June 2019', 'User A', 3, 'Ongoing'),
-  createData('AA130', '8 June 2019', 'User A', 3, 'Ongoing'),
-  createData('AA133', '8 June 2019', 'User A', 2, 'Complete'),
-  createData('AA132', '2 June 2019', 'User A', 2, 'Ongoing'),
-  createData('AA131', '1 June 2019', 'User A', 2, 'Ongoing'),
-];
 class PackagePage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             page: 0,
             rowsPerPage:10,
+            dialogState: false
         };
+        this.userDetail = {};
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.statusDetail = this.statusDetail.bind(this);
+        this.columns = [
+          { id: 'orderNo', label: 'รหัสคำสั่งซื้อ', minWidth: 100 },
+          { id: 'transDate', label: 'วันที่ทำรายการ', minWidth: 100 },
+          {
+            id: 'buyer',
+            label: 'ชื่อผู้ชื้อ',
+            minWidth: 200,
+            align: 'left',
+          },
+          {
+            id: 'transportWeek',
+            label: 'อาทิตย์ที่จัดส่ง',
+            minWidth: 80,
+            align: 'left',
+          },
+          {
+            id: 'status',
+            label: 'สถานะ',
+            minWidth: 120,
+            align: 'center',
+            special: (value, row) => 
+              <Fab size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor[value], color: 'white', textTransform: 'inherit', width: '100px'}}>
+                {row.status}
+              </Fab>
+          },
+        ];
+        
+        this.rows = dataService.getPackages();
+    }
+
+    statusDetail(e, orderNo){
+      this.packageDetail = dataService.getPackage(orderNo);
+      
+      Object.assign(this.userDetail, dataService.getUserDetail(orderNo));
+      this.openDialog(true);
     }
 
     handleChangePage(event,newPage){
@@ -112,10 +104,22 @@ class PackagePage extends React.Component {
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
     }
+
+    openDialog = () => {
+      this.setState({dialogState: true});
+    }
+
+    closeDialog = () => {
+      this.setState({dialogState: false});
+    }
+
     render() {
         const { classes } = this.props;
-        const { page,rowsPerPage } = this.state;
+        const { page, rowsPerPage, dialogState } = this.state;
+        const showStatus = true;
         return (
+          <>
+          <DialogDetailComponent userDetail={this.userDetail} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} closeDialog={this.closeDialog} dialogState={dialogState} />
           <Paper className={classes.root}>
               <Grid
                   container
@@ -131,7 +135,7 @@ class PackagePage extends React.Component {
               <Table>
                 <TableHead>
                   <TableRow>
-                    {columns.map(column => (
+                    {this.columns.map(column => (
                       <TableCell
                         key={column.id}
                         align={column.align}
@@ -143,17 +147,17 @@ class PackagePage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                        {columns.map(column => {
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code} onClick={(e) => {this.statusDetail(e, row.orderNo)}}>
+                        {this.columns.map(column => {
                           const value = row[column.id];
                           return (
                             <TableCell key={column.id} align={column.align}>
                               {column.format && typeof value === 'number' ? column.format(value)
                                 :
                                 column.special?
-                                  column.special(value)
+                                  column.special(value, row)
                                 :
                                 value}
                             </TableCell>
@@ -168,7 +172,7 @@ class PackagePage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={rows.length}
+              count={this.rows.length}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
@@ -181,6 +185,7 @@ class PackagePage extends React.Component {
               onChangeRowsPerPage={this.handleChangeRowsPerPage}
             />
           </Paper>
+          </>
         );
     }
 }
