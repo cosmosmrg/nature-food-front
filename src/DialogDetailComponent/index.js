@@ -19,7 +19,7 @@ const DialogContent = withStyles(theme => ({
 }))(MuiDialogContent);
 
 class DialogDetailComponent extends React.Component {
-      renderOrderDetail(orderDetail, renderStatus) {
+      renderOrderDetail(orderDetail) {
         function sum(products){
           let total = 0;
           products.forEach(x=> total += x.total);
@@ -63,24 +63,27 @@ class DialogDetailComponent extends React.Component {
         )
       }
 
+      changeStatus(state){
+        this.setState({status: state})
+      }
+
       renderStatus(orderDetail, closeDialog) {
         if(!orderDetail) return;
-        const status = dataService.getStatusData();
+        const statuses = dataService.getStatusData();
         const updateStatus = () => {
           closeDialog();
-          console.log(this.valueStatus);
         }
 
         const handleChange = event => {
           this.setState({status: event.target.value})
         };
-
+        
         return (
           <>
           <FormControl component="fieldset" style={{marginTop: '10px'}}>
             <FormLabel component="legend" style={{fontWeight: 'bold'}}>สถานะ</FormLabel>
-            <RadioGroup aria-label="position" name="position"  onChange={handleChange} row>
-            {status.map(column => {
+            <RadioGroup aria-label="position" name="position" value={this.state.status} onChange={handleChange} row>
+            {statuses.map(column => {
               return(
               <FormControlLabel
                 value={column.value}

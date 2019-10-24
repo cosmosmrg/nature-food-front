@@ -24,7 +24,7 @@ function getPackage(orderNo) {
     ];
     
 
-    return { products: data.filter(x=> x.orderNo == orderNo), time: 10 ,transportWeek : 1 ,startDate: '10 June 2019' ,endDate: '10 June 2019' };
+    return { products: data.filter(x=> x.orderNo == orderNo), time: 10 ,transportWeek : 1 ,startDate: '10 June 2019' ,endDate: '10 June 2019', status: '4' };
 }
 
 function getUserDetail(orderNo) {

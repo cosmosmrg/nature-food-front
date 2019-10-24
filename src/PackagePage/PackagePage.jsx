@@ -5,7 +5,6 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
@@ -56,6 +55,7 @@ class PackagePage extends React.Component {
             rowsPerPage:10,
             dialogState: false
         };
+        this.dialogDetailElement = React.createRef();
         this.userDetail = {};
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
@@ -92,7 +92,7 @@ class PackagePage extends React.Component {
 
     statusDetail(e, orderNo){
       this.packageDetail = dataService.getPackage(orderNo);
-      
+      this.dialogDetailElement.current.changeStatus(this.packageDetail.status);
       Object.assign(this.userDetail, dataService.getUserDetail(orderNo));
       this.openDialog(true);
     }
@@ -119,7 +119,7 @@ class PackagePage extends React.Component {
         const showStatus = true;
         return (
           <>
-          <DialogDetailComponent userDetail={this.userDetail} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} closeDialog={this.closeDialog} dialogState={dialogState} />
+          <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} closeDialog={this.closeDialog} dialogState={dialogState}/>
           <Paper className={classes.root}>
               <Grid
                   container
