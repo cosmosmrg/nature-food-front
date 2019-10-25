@@ -22,9 +22,9 @@ function getPackage(orderNo) {
         createData('AA122', 'ยาดม', 1, 500),
         createData('AA121', 'ยาหม่อง', 1, 200),
     ];
-    
 
-    return { products: data.filter(x=> x.orderNo == orderNo), time: 10 ,transportWeek : 1 ,startDate: '10 June 2019' ,endDate: '10 June 2019', status: '4' };
+
+    return { products: data.filter(x=> x.orderNo === orderNo), time: 10 ,transportWeek : 1 ,startDate: '10 June 2019' ,endDate: '10 June 2019', status: '4' };
 }
 
 function getUserDetail(orderNo) {
@@ -38,7 +38,7 @@ function getUserDetail(orderNo) {
         createData('AA121', 'คุณ ทดสอบ3 ทดสอบ', '121 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test3@test.com', '081-111-333')
 
     ];
-    return data.find(x=> x.orderNo == orderNo);
+    return data.find(x=> x.orderNo === orderNo);
 }
 
 function getStatusData(){
