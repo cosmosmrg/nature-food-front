@@ -51,10 +51,33 @@ function getStatusData(){
       ]
 }
 
+function getProduct(productID){
+  function createData(productID, name, size, price, seller,status,picture) {
+    return { productID, name, size, price, seller,status,picture };
+  }
+
+  const data = [
+    createData('00001','ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', 'Non-Subscribe'),
+    createData('00002','ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
+    createData('00003','ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', 'Non-Subscribe'),
+    createData('00004','นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
+    createData('00005','ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', 'Non-Subscribe'),
+    createData('00006','ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
+    createData('00007','ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', 'Non-Subscribe'),
+    createData('00008','นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
+    createData('00009','ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', 'Non-Subscribe'),
+    createData('00010','ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
+    createData('00011','ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', 'Non-Subscribe'),
+    createData('00012','นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
+  ];
+  return data.find(x=> x.productID === productID);
+}
+
 
 export const dataService = {
     getPackages,
     getPackage,
     getUserDetail,
-    getStatusData
+    getStatusData,
+    getProduct
 };
