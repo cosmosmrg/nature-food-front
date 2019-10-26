@@ -117,9 +117,10 @@ class PackagePage extends React.Component {
         const { classes } = this.props;
         const { page, rowsPerPage, dialogState } = this.state;
         const showStatus = true;
+        const showOrderShipping = true;
         return (
           <>
-          <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} closeDialog={this.closeDialog} dialogState={dialogState}/>
+          <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} showOrderShipping={showOrderShipping} closeDialog={this.closeDialog} dialogState={dialogState}/>
           <Paper className={classes.root}>
               <Grid
                   container

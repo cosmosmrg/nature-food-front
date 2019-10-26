@@ -19,7 +19,25 @@ const DialogContent = withStyles(theme => ({
 }))(MuiDialogContent);
 
 class DialogDetailComponent extends React.Component {
-      renderOrderDetail(orderDetail) {
+      renderOrderShipping(orderDetail){
+        return (<div style={{ padding: '10px 0', borderBottom: '1px solid white' }}>
+          
+          <Typography gutterBottom>
+            ระยะเวลา: {orderDetail.time} เดือน
+          </Typography>
+          <Typography gutterBottom>
+            สัปดาห์ในการจัดส่ง {orderDetail.transportWeek}
+          </Typography>
+          <Typography gutterBottom>
+            วันที่เริ่มต้น: {orderDetail.startDate}
+          </Typography>
+          <Typography gutterBottom>
+            วันที่สิ้นสุด: {orderDetail.endDate}
+          </Typography>
+        </div>);
+      }
+
+      renderOrderDetail(orderDetail, showOrderShipping) {
         function sum(products){
           let total = 0;
           products.forEach(x=> total += x.total);
@@ -30,24 +48,10 @@ class DialogDetailComponent extends React.Component {
         return (
           <>
             <div style={{ width: '500px', borderRadius: '5px', backgroundColor: '#294b81', marginBottom: '10px', color: 'white', padding: '16px' }}>
-              <div style={{ paddingBottom: '10px', borderBottom: '1px solid white' }}>
-                <Typography variant="h6" style={{ marginBottom: '16px' }}>
-                  คำสั่งซื้อ
+              <Typography variant="h6" >
+              คำสั่งซื้อ
               </Typography>
-                <Typography gutterBottom>
-                  ระยะเวลา: {orderDetail.time} เดือน
-                </Typography>
-                <Typography gutterBottom>
-                  สัปดาห์ในการจัดส่ง {orderDetail.transportWeek}
-                </Typography>
-                <Typography gutterBottom>
-                  วันที่เริ่มต้น: {orderDetail.startDate}
-                </Typography>
-                <Typography gutterBottom>
-                  วันที่สิ้นสุด: {orderDetail.endDate}
-                </Typography>
-
-              </div>
+              {showOrderShipping && this.renderOrderShipping(orderDetail)}
               <div style={{ paddingBottom: '10px', paddingTop: '10px', borderBottom: '1px solid white' }}>
                 {orderDetail.products.map(row => {
                   return (<Typography gutterBottom>
@@ -101,7 +105,7 @@ class DialogDetailComponent extends React.Component {
       }
 
       render() {
-        const { userDetail, child, dialogState, closeDialog, showStatus, orderDetail } = this.props
+        const { userDetail, child, dialogState, closeDialog, showStatus, orderDetail, showOrderShipping } = this.props
         return (
           <>
             <Dialog
@@ -130,7 +134,7 @@ class DialogDetailComponent extends React.Component {
                   <Typography>{userDetail.phoneNumber}</Typography>
                 </Typography>
                 {child && child()}
-                {orderDetail && this.renderOrderDetail(orderDetail)}
+                {orderDetail && this.renderOrderDetail(orderDetail, showOrderShipping)}
                 {showStatus && this.renderStatus(orderDetail, closeDialog)}
               </DialogContent>
             </Dialog>
