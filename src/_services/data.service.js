@@ -10,6 +10,27 @@ function getPackages() {
     ];
 }
 
+function getOrders(){
+  function createData(orderCode, orderDate, buyer, price, status) {
+    return { orderCode, orderDate, buyer, price, status };
+  }
+  
+  return [
+    createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
+    createData('AA122', '10 June 2019', 'User A', 250, 'Complete'),
+    createData('AA121', '10 June 2019', 'User A', 250, 'Pending'),
+    createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
+    createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
+    createData('AA123', '10 June 2019', 'User A', 250, 'Complete'),
+    createData('AA123', '10 June 2019', 'User A', 250, 'Pending'),
+    createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
+    createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
+    createData('AA123', '10 June 2019', 'User A', 250, 'Complete'),
+    createData('AA123', '10 June 2019', 'User A', 250, 'Pending'),
+    createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
+  ];
+}
+
 function getPackage(orderNo) {
     function createData(orderNo, productName, amount, total) {
         return { orderNo, productName, amount, total };
@@ -103,5 +124,6 @@ export const dataService = {
     getUserDetail,
     getStatusData,
     getProduct,
-    getProducts
+    getProducts,
+    getOrders
 };

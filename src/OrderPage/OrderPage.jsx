@@ -11,6 +11,7 @@ import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 
 import { withStyles } from '@material-ui/styles';
+import { dataService } from '../_services/data.service'
 
 //Dialog
 import DialogDetailComponent from '../DialogDetailComponent'
@@ -64,35 +65,12 @@ const columns = [
     special: value => {
       let statusColor;
       value === "Pending" ? statusColor = '#d9b128' : statusColor = '#27b95a'
-      return (<Fab size="medium" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor, color: 'white', width: '110px'}}>
+      return (<Fab size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor, color: 'white', width: '110px'}}>
         {value}
       </Fab>)},
   },
 ];
 
-function createData(orderCode, orderDate, buyer, price, status) {
-  return { orderCode, orderDate, buyer, price, status };
-}
-
-const rows = [
-  createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
-  createData('AA123', '10 June 2019', 'User A', 250, 'Complete'),
-  createData('AA123', '10 June 2019', 'User A', 250, 'Pending'),
-  createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
-  createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
-  createData('AA123', '10 June 2019', 'User A', 250, 'Complete'),
-  createData('AA123', '10 June 2019', 'User A', 250, 'Pending'),
-  createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
-  createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
-  createData('AA123', '10 June 2019', 'User A', 250, 'Complete'),
-  createData('AA123', '10 June 2019', 'User A', 250, 'Pending'),
-  createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
-];
-
-function createUserData(name, place, email, phoneNumber) {
-  return { name, place, email, phoneNumber };
-}
-const userDetail = createUserData('คุณ ทดสอบ ทดสอบ', '123 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test@test.com', '081-111-1111');
 
 class OrderPage extends React.Component {
     constructor(props) {
@@ -102,8 +80,11 @@ class OrderPage extends React.Component {
             rowsPerPage: 10,
             dialogState: false,
         };
+        this.userDetail = {};
+        this.dialogDetailElement = React.createRef();
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.rows = dataService.getOrders();
     }
 
     handleChangePage(event,newPage){
@@ -114,6 +95,12 @@ class OrderPage extends React.Component {
       this.setState({page: 0,rowsPerPage:event.target.value})
     }
 
+    orderDetail = (e, orderCode) => {
+      this.packageDetail = dataService.getPackage(orderCode);
+      this.dialogDetailElement.current.changeStatus(this.packageDetail.status);
+      Object.assign(this.userDetail, dataService.getUserDetail(orderCode));
+      this.openDialog();
+    }
     openDialog = () => {
       this.setState({dialogState: true})
     }
@@ -122,18 +109,13 @@ class OrderPage extends React.Component {
       this.setState({dialogState: false})
     }
 
-    test = () => {
-      return(
-        <div>Page Content</div>
-      )
-    }
-
     render() {
         const { classes } = this.props;
         const { page, rowsPerPage, dialogState } = this.state;
+        const showStatus = true;
         return (
           <>
-            <DialogDetailComponent userDetail={userDetail} child={this.test} closeDialog={this.closeDialog} dialogState={dialogState} />
+            <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} orderDetail={this.packageDetail} closeDialog={this.closeDialog} dialogState={dialogState} showStatus={showStatus}/>
             <Paper className={classes.root}>
                 <Grid
                     container
@@ -161,13 +143,13 @@ class OrderPage extends React.Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                    {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                       return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                           {columns.map(column => {
                             const value = row[column.id];
                             return (
-                              <TableCell key={column.id} align={column.align} onClick={this.openDialog}>
+                              <TableCell key={column.id} align={column.align} onClick={(e) => {this.orderDetail(e, row.orderCode)}}>
                                 {column.format && typeof value === 'number' ? column.format(value)
                                   :
                                   column.special?
@@ -186,7 +168,7 @@ class OrderPage extends React.Component {
               <TablePagination
                 rowsPerPageOptions={[10, 25, 100]}
                 component="div"
-                count={rows.length}
+                count={this.rows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 backIconButtonProps={{
