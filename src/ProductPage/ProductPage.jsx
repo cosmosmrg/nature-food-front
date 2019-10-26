@@ -9,6 +9,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
+import { dataService } from '../_services/data.service'
 
 import { withStyles } from '@material-ui/styles';
 
@@ -59,7 +60,11 @@ const columns = [
     minWidth: 120,
     align: 'center',
     special: value => value === "Subscribe"?
-      <Fab size="medium" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: '#AE27B9', color: 'white'}}>
+      <Fab size="medium"
+        variant="extended"
+        aria-label="delete"
+        style={{margin: '10px', backgroundColor: '#AE27B9', color: 'white'}}
+        disabled>
         {value}
       </Fab>
       :<h5>-</h5>,
@@ -91,9 +96,19 @@ class ProductPage extends React.Component {
         this.state = {
             page: 0,
             rowsPerPage:10,
+            data:[]
         };
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.getProducts = this.getProducts.bind(this);
+        this.handleProductCreate= this.handleProductCreate.bind(this);
+    }
+    componentDidMount(){
+      this.getProducts()
+    }
+
+    getProducts(){
+      this.setState(() => ({ data:dataService.getProducts()}))
     }
 
     handleChangePage(event,newPage){
@@ -103,10 +118,16 @@ class ProductPage extends React.Component {
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
     }
+    handleProductCreate(event){
+      this.props.history.push('/product/create')
+    }
+    handleProductEdit(event,productID){
+      this.props.history.push(`/product/${productID}`)
+    }
 
     render() {
         const { classes } = this.props;
-        const { page,rowsPerPage } = this.state;
+        const { page,rowsPerPage,data } = this.state;
         return (
           <Paper className={classes.root}>
               <Grid
@@ -115,14 +136,22 @@ class ProductPage extends React.Component {
                   justify="space-between"
                   alignItems="flex-start"
                 >
-                <Fab variant="extended" aria-label="delete" className={classes.fabTransparent}>
+                <Fab variant="extended" aria-label="delete"
+                  className={classes.fabTransparent}
+                  style={{backgroundColor:'transparent',color:'black'}}
+                  disabled>
                   Product
                 </Fab>
-                <div HorizontalAlignment="Right">
+                <div>
                   <Fab size="medium" variant="extended" aria-label="delete" className={classes.fab} style={{backgroundColor:'#648EB5'}}>
                     อนุมัติสินค้าใหม่
                   </Fab>
-                  <Fab size="medium" variant="extended" aria-label="delete" className={classes.fab} style={{backgroundColor:'#0079EA'}}>
+                  <Fab
+                    size="medium"
+                    variant="extended"
+                    aria-label="delete"
+                    className={classes.fab} style={{backgroundColor:'#0079EA'}}
+                    onClick={this.handleProductCreate}>
                     เพิ่มสินค้าใหม่
                   </Fab>
                 </div>
@@ -143,9 +172,9 @@ class ProductPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.productID} onClick={(e) => {this.handleProductEdit(e, row.productID)}}>
                         {columns.map(column => {
                           const value = row[column.id];
                           return (

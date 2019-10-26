@@ -33,7 +33,8 @@ const styles = theme => ({
     boxShadow: '0 0 0',
   },
   body:{
-    paddingLeft: 30
+    paddingLeft:theme.spacing(3),
+    paddingBottom:theme.spacing(3)
   },
   textField: {
     width: '30%',
@@ -65,6 +66,7 @@ class ProductCreatePage extends React.Component {
         };
         this.handleChange = this.handleChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
+        this.handleBack= this.handleBack.bind(this)
 
     }
 
@@ -80,7 +82,11 @@ class ProductCreatePage extends React.Component {
     }
 
     getProductNotFoundError(){
-      return <p>ไม่พบสินค้า</p>
+      return(
+        <div style={{textAlign: 'center'}}>
+          <h3>ไม่พบสินค้า</h3>
+        </div>
+      )
     }
 
     getHeader(isCreate){
@@ -111,6 +117,9 @@ class ProductCreatePage extends React.Component {
       const {product} = this.state;
       return product !== null && product.name !== "" && product.size !== "" && product.price !== ""
     }
+    handleBack(event){
+      this.props.history.push('/product')
+    }
 
     render() {
         const { classes } = this.props;
@@ -126,85 +135,90 @@ class ProductCreatePage extends React.Component {
                 <Fab variant="extended"
                   aria-label="delete"
                   className={classes.fabTransparent}
-                  href='/product'
+                  onClick={this.handleBack}
                   >
                   &#60; {this.getHeader(isCreate)}
                 </Fab>
               </Grid>
               <div className={classes.body}>
-                <Grid
-                    container
-                    direction="column"
-                    justify="space-between"
-                    alignItems="flex-start"
-                  >
-                  <h3>ข้อมูลสินค้า</h3>
-                  <TextField
-                    id="name"
-                    className={classes.textField}
-                    value={product.name}
-                    margin="normal"
-                    name="name"
-                    placeholder="ชื่อสินค้า"
-                    InputProps={{
-                      classes: {
-                        input: classes.resize,
-                      },
-                    }}
-                    onChange={this.handleChange}
-                    error={isError&&product.name===""}
-                    helperText={isError&&product.name===""?"กรุณาใส่ชื่อสินค้า":""}
-                  />
-                  <TextField
-                    id="size"
-                    className={classes.textField}
-                    value={product.size}
-                    margin="normal"
-                    name="size"
-                    placeholder="ขนาด"
-                    InputProps={{
-                      classes: {
-                        input: classes.resize,
-                      },
-                    }}
-                    onChange={this.handleChange}
-                    error={isError&&product.size===""}
-                    helperText={isError&&product.size===""?"กรุณาใส่ขนาดสินค้า":""}
-                  />
-                  <TextField
-                    id="price"
-                    className={classes.textField}
-                    value={product.price}
-                    margin="normal"
-                    name="price"
-                    placeholder="ราคา"
-                    InputProps={{
-                      classes: {
-                        input: classes.resize,
-                      },
-                    }}
-                    onChange={this.handleChange}
-                    error={isError&&product.price===""}
-                    helperText={isError&&product.price===""?"กรุณาใส่ราคา":""}
-                  />
-                  <FormControl component="fieldset" className={classes.formControl}>
-                    <FormLabel component="legend" style={{color:'black'}}>สถานะ</FormLabel>
-                    <RadioGroup aria-label="status" name="status" value={product.status} onChange={this.handleChange}>
-                      <FormControlLabel value="Non-Subscribe" control={<Radio />} label="Non-Subscribe" />
-                      <FormControlLabel value="Subscribe" control={<Radio />} label="Subscribe" />
-                    </RadioGroup>
-                  </FormControl>
-                  <p>รูปภาพ</p>
-                  <img style={{ maxWidth: 210, maxHeight: 118}}
-                    alt={product.name}
-                    src={product.picture?product.picture:errorimage}
-                    onError={this.addDefaultSrc}/>
-                  <Fab size="medium" variant="extended" aria-label="delete"
-                    className={classes.fab} style={{backgroundColor:'#0079EA',width:100}}
-                    onClick={this.onSubmit}>
-                    บันทึก
-                  </Fab>
-                </Grid>
+                {
+                  product===undefined?
+                    this.getProductNotFoundError()
+                    :
+                    <Grid
+                        container
+                        direction="column"
+                        justify="space-between"
+                        alignItems="flex-start"
+                      >
+                      <h3>ข้อมูลสินค้า</h3>
+                      <TextField
+                        id="name"
+                        className={classes.textField}
+                        value={product.name}
+                        margin="normal"
+                        name="name"
+                        placeholder="ชื่อสินค้า"
+                        InputProps={{
+                          classes: {
+                            input: classes.resize,
+                          },
+                        }}
+                        onChange={this.handleChange}
+                        error={isError&&product.name===""}
+                        helperText={isError&&product.name===""?"กรุณาใส่ชื่อสินค้า":""}
+                      />
+                      <TextField
+                        id="size"
+                        className={classes.textField}
+                        value={product.size}
+                        margin="normal"
+                        name="size"
+                        placeholder="ขนาด"
+                        InputProps={{
+                          classes: {
+                            input: classes.resize,
+                          },
+                        }}
+                        onChange={this.handleChange}
+                        error={isError&&product.size===""}
+                        helperText={isError&&product.size===""?"กรุณาใส่ขนาดสินค้า":""}
+                      />
+                      <TextField
+                        id="price"
+                        className={classes.textField}
+                        value={product.price}
+                        margin="normal"
+                        name="price"
+                        placeholder="ราคา"
+                        InputProps={{
+                          classes: {
+                            input: classes.resize,
+                          },
+                        }}
+                        onChange={this.handleChange}
+                        error={isError&&product.price===""}
+                        helperText={isError&&product.price===""?"กรุณาใส่ราคา":""}
+                      />
+                      <FormControl component="fieldset" className={classes.formControl}>
+                        <FormLabel component="legend" style={{color:'black'}}>สถานะ</FormLabel>
+                        <RadioGroup aria-label="status" name="status" value={product.status} onChange={this.handleChange}>
+                          <FormControlLabel value="Non-Subscribe" control={<Radio />} label="Non-Subscribe" />
+                          <FormControlLabel value="Subscribe" control={<Radio />} label="Subscribe" />
+                        </RadioGroup>
+                      </FormControl>
+                      <p>รูปภาพ</p>
+                      <img style={{ maxWidth: 210, maxHeight: 118}}
+                        alt={product.name}
+                        src={product.picture?product.picture:errorimage}
+                        onError={this.addDefaultSrc}/>
+                      <Fab size="medium" variant="extended" aria-label="delete"
+                        className={classes.fab} style={{backgroundColor:'#0079EA',width:100}}
+                        onClick={this.onSubmit}>
+                        บันทึก
+                      </Fab>
+                    </Grid>
+                }
               </div>
           </Paper>
         );
