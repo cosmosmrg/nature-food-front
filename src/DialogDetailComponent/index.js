@@ -105,7 +105,7 @@ class DialogDetailComponent extends React.Component {
       }
 
       render() {
-        const { userDetail, child, dialogState, closeDialog, showStatus, orderDetail, showOrderShipping } = this.props
+        const { userDetail, customTemplate, dialogState, closeDialog, showStatus, orderDetail, showOrderShipping } = this.props
         return (
           <>
             <Dialog
@@ -133,7 +133,7 @@ class DialogDetailComponent extends React.Component {
                   <Typography style={{marginRight: '30px'}}>เบอร์</Typography>
                   <Typography>{userDetail.phoneNumber}</Typography>
                 </Typography>
-                {child && child()}
+                {customTemplate && customTemplate()}
                 {orderDetail && this.renderOrderDetail(orderDetail, showOrderShipping)}
                 {showStatus && this.renderStatus(orderDetail, closeDialog)}
               </DialogContent>
