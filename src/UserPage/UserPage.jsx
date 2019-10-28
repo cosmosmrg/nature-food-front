@@ -103,7 +103,7 @@ class UserPage extends React.Component {
             label: '',
             minWidth: 120,
             align: 'center',
-            special: value => 
+            special: value =>
               <Fab size="small" onClick={(e) => this.openConfirmDialog(e, value)} variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: '#648eb5', color: 'white', textTransform: 'inherit', width: '100px'}}>
                 โอนเงิน
               </Fab>
@@ -164,7 +164,7 @@ class UserPage extends React.Component {
       }
       function TabPanel(props) {
         const { children, value, index, ...other } = props;
-      
+
         return (
           <Typography
             component="div"
@@ -184,12 +184,12 @@ class UserPage extends React.Component {
         value: PropTypes.any.isRequired,
       };
       return (
-         
+
             <div style={{ paddingBottom: '10px' }}>
             <AppBar position="static" style={{backgroundColor: '#294b81' ,borderTopLeftRadius: '5px', borderTopRightRadius: '5px'}}>
               <Tabs value={tabState} onChange={this.onTabChange} aria-label="simple tabs example" indicatorColor="primary">
                 <Tab label="ประวัติการโอนเงิน" {...a11yProps(0)} />
-                <Tab label="ราชื่อสินค้า" {...a11yProps(1)} />
+                <Tab label="รายชื่อสินค้า" {...a11yProps(1)} />
               </Tabs>
             </AppBar>
             <TabPanel style={{backgroundColor: '#294b81', borderBottomRightRadius: '5px' ,borderBottomLeftRadius: '5px'}} value={tabState} index={0}>
@@ -199,7 +199,7 @@ class UserPage extends React.Component {
                       {history.map(row => (
                         <TableRow role="checkbox" tabIndex={-1} key={row.historyId} >
                           <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.date}</TableCell>
-                          <TableCell align="right" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.value}</TableCell>
+                          <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.value}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -219,11 +219,11 @@ class UserPage extends React.Component {
                 </Table>
               </div>
             </TabPanel>
-              
-              
+
+
             </div>
 
-        
+
       )
     }
 
@@ -247,7 +247,7 @@ class UserPage extends React.Component {
           <DialogTitle id="alert-dialog-title">{"ยืนยันการโอนเงิน"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              ต้องการยืนยันการโอนเงินจำนวน {userSelected.balance} ให้นาย {userSelected.name} หรือไม่
+              ต้องการยืนยันการโอนเงินจำนวน {userSelected.balance} ให้ {userSelected.name} หรือไม่
           </DialogContentText>
           </DialogContent>
           <DialogActions style={{ justifyContent: 'flex-start' }}>
@@ -267,10 +267,10 @@ class UserPage extends React.Component {
         const { page, rowsPerPage, data, detailDialog, userDetail } = this.state;
         return (
           <>
-          
+
           <Paper className={classes.root}>
           <DialogDetailComponent userDetail={userDetail} customTemplate={this.customTemplate} closeDialog={this.closeDialog} dialogState={detailDialog}/>
-         
+
               {this.confirmDialog()}
               <Grid
                   container
@@ -348,4 +348,3 @@ function mapState(state) {
 
 const connectedPackagePage = connect(mapState,)(withStyles(styles)(UserPage));
 export { connectedPackagePage as UserPage };
-
