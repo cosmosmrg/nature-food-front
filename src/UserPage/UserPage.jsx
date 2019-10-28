@@ -279,7 +279,7 @@ class UserPage extends React.Component {
                   alignItems="flex-start"
                 >
                 <Fab variant="extended" aria-label="delete" className={classes.fabTransparent} style={{backgroundColor:'transparent',color:'black'}} disabled>
-                  PACKAGE
+                  USER
                 </Fab>
               </Grid>
             <div className={classes.tableWrapper}>
