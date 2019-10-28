@@ -100,6 +100,7 @@ function getStatusData(){
 function getHistory(userID) {
   return [
     { historyId: '00001', value: '150 บาท', date: '10 June 2019' },
+    { historyId: '00002', value: '658 บาท', date: '10 June 2019' },
     { historyId: '00003', value: '150 บาท', date: '10 June 2019' },
     { historyId: '00004', value: '4150 บาท', date: '10 June 2019' },
     { historyId: '00005', value: '5150 บาท', date: '10 June 2019' },

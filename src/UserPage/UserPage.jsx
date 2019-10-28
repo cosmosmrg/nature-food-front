@@ -68,7 +68,6 @@ class UserPage extends React.Component {
             rowsPerPage:10,
             confirmDialog: false,
             detailDialog: false,
-            listItemDialog: false,
             tabState: 0,
             data:[],
             userSelected: {},
@@ -228,10 +227,11 @@ class UserPage extends React.Component {
       )
     }
 
-    detail(e, orderCode){
+    detail(e, userId){
       if (e.defaultPrevented ) return;
       this.setState({userDetail: dataService.getUserDetail('AA123')});
       this.setState({detailDialog: true});
+      this.setState({tabState: 0});
     }
 
     confirmDialog() {
