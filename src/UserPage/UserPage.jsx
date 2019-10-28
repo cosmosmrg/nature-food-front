@@ -188,7 +188,7 @@ class UserPage extends React.Component {
             <div style={{ paddingBottom: '10px' }}>
             <AppBar position="static" style={{backgroundColor: '#294b81' ,borderTopLeftRadius: '5px', borderTopRightRadius: '5px'}}>
               <Tabs value={tabState} onChange={this.onTabChange} aria-label="simple tabs example" indicatorColor="primary">
-                <Tab label="ประวัติการโอน" {...a11yProps(0)} />
+                <Tab label="ประวัติการโอนเงิน" {...a11yProps(0)} />
                 <Tab label="ราชื่อสินค้า" {...a11yProps(1)} />
               </Tabs>
             </AppBar>
