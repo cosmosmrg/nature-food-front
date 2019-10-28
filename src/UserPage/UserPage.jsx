@@ -84,28 +84,28 @@ class UserPage extends React.Component {
         this.onTabChange = this.onTabChange.bind(this);
 
         this.columns = [
-          { id: 'email', label: '������', minWidth: 100 },
-          { id: 'name', label: '����', minWidth: 100 },
+          { id: 'email', label: 'อีเมล์', minWidth: 100 },
+          { id: 'name', label: 'ชื่อ', minWidth: 100 },
           {
             id: 'balance',
-            label: '�ʹ��ҧ�͹',
+            label: 'ยอดค้างโอน',
             minWidth: 200,
             align: 'left',
           },
           {
             id: 'amount',
-            label: '�ӹǹ�Թ���',
+            label: 'จำนวนสินค้า',
             minWidth: 80,
             align: 'left',
           },
           {
             id: 'userId',
-            label: 'ʶҹ�',
+            label: 'สถานะ',
             minWidth: 120,
             align: 'center',
             special: value => 
               <Fab size="small" onClick={(e) => this.openConfirmDialog(e, value)} variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: '#648eb5', color: 'white', textTransform: 'inherit', width: '100px'}}>
-                �͹�Թ
+                โอนเงิน
               </Fab>
           },
         ];
@@ -188,8 +188,8 @@ class UserPage extends React.Component {
             <div style={{ paddingBottom: '10px' }}>
             <AppBar position="static" style={{backgroundColor: '#294b81' ,borderTopLeftRadius: '5px', borderTopRightRadius: '5px'}}>
               <Tabs value={tabState} onChange={this.onTabChange} aria-label="simple tabs example" indicatorColor="primary">
-                <Tab label="����ѵԡ���͹" {...a11yProps(0)} />
-                <Tab label="�Ҫ����Թ���" {...a11yProps(1)} />
+                <Tab label="ประวัติการโอน" {...a11yProps(0)} />
+                <Tab label="ราชื่อสินค้า" {...a11yProps(1)} />
               </Tabs>
             </AppBar>
             <TabPanel style={{backgroundColor: '#294b81', borderBottomRightRadius: '5px' ,borderBottomLeftRadius: '5px'}} value={tabState} index={0}>
@@ -244,18 +244,18 @@ class UserPage extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">{"�׹�ѹ����͹�Թ"}</DialogTitle>
+          <DialogTitle id="alert-dialog-title">{"ยืนยันการโอนเงิน"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              ��ͧ����׹�ѹ����͹�Թ�ӹǹ {userSelected.balance} ����� {userSelected.name} �������
+              ต้องการยืนยันการโอนเงินจำนวน {userSelected.balance} ให้นาย {userSelected.name} หรือไม่
           </DialogContentText>
           </DialogContent>
           <DialogActions style={{ justifyContent: 'flex-start' }}>
             <Fab size="small" onClick={event.cancel} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#eb2a51', color: 'white', textTransform: 'inherit', width: '130px' }}>
-              ¡��ԡ
+              ยกเลิก
               </Fab>
             <Fab size="small" onClick={event.confirm} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#0079ea', color: 'white', textTransform: 'inherit', width: '130px' }}>
-              �׹�ѹ
+              ยืนยัน
               </Fab>
           </DialogActions>
         </Dialog>
