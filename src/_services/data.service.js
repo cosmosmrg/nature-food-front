@@ -6,7 +6,7 @@ function getPackages() {
     return [
         createData('AA123', '10 June 2019', 'คุณ สวดีดัด ทดสอบ', 1, 'Pending'),
         createData('AA122', '10 June 2019', 'คุณ ชาวโลก ทดสอบ', 2, 'Complete'),
-        createData('AA123', '10 June 2019', 'คุณ ทดสอบ3 ทดสอบ', 1, 'Ongoing'),
+        createData('AA121', '10 June 2019', 'คุณ ทดสอบ3 ทดสอบ', 1, 'Ongoing'),
     ];
 }
 
@@ -19,17 +19,42 @@ function getOrders(){
     createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
     createData('AA122', '10 June 2019', 'User A', 250, 'Complete'),
     createData('AA121', '10 June 2019', 'User A', 250, 'Pending'),
-    createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
-    createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
-    createData('AA123', '10 June 2019', 'User A', 250, 'Complete'),
-    createData('AA123', '10 June 2019', 'User A', 250, 'Pending'),
-    createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
-    createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
-    createData('AA123', '10 June 2019', 'User A', 250, 'Complete'),
-    createData('AA123', '10 June 2019', 'User A', 250, 'Pending'),
-    createData('AA123', '10 June 2019', 'User A', 25, 'Complete'),
+    createData('AA124', '10 June 2019', 'User A', 25, 'Complete'),
+    createData('AA125', '10 June 2019', 'User A', 50, 'Pending'),
+    createData('AA126', '10 June 2019', 'User A', 250, 'Complete'),
+    createData('AA127', '10 June 2019', 'User A', 250, 'Pending'),
+    createData('AA128', '10 June 2019', 'User A', 25, 'Complete'),
+    createData('AA129', '10 June 2019', 'User A', 50, 'Pending'),
+    createData('AA130', '10 June 2019', 'User A', 250, 'Complete'),
+    createData('AA131', '10 June 2019', 'User A', 250, 'Pending'),
+    createData('AA132', '10 June 2019', 'User A', 25, 'Complete'),
   ];
 }
+
+function getUsers() {
+  function createData(userId, email, name, balance, amount) {
+    return { userId, email, name, balance, amount};
+  }
+  
+  return [
+    createData('00001', 'user1@hotmail.com', 'User A', '50 บาท', 1),
+    createData('00002', 'user2@hotmail.com', 'User B', '150 บาท', 1),
+    createData('00003', 'user3@hotmail.com', 'User B', '20 บาท', 1),
+    createData('00004', 'user4@hotmail.com', 'User B', '50 บาท', 1),
+    createData('00005', 'user5@hotmail.com', 'User C', '50 บาท', 1),
+    createData('00006', 'user6@hotmail.com', 'User C', '50 บาท', 1),
+    createData('00007', 'user7@hotmail.com', 'User A', '50 บาท', 1),
+    createData('00008', 'user8@hotmail.com', 'User A', '50 บาท', 1),
+    createData('00009', 'user9@hotmail.com', 'User C', '50 บาท', 1),
+    createData('00010', 'user10@hotmail.com', 'User A', '50 บาท', 1),
+    createData('00011', 'user11@hotmail.com', 'User A', '50 บาท', 1),
+  ];
+}
+
+function getUser(userId) {
+  return this.getUsers().find(user => user.userId === userId);
+}
+
 
 function getPackage(orderNo) {
     function createData(orderNo, productName, amount, total) {
@@ -70,6 +95,23 @@ function getStatusData(){
         { value: '4', label: 'Shipped' },
         { value: '5', label: 'Dispathing from Local Warehouse' },
       ]
+}
+
+function getHistory(userID) {
+  return [
+    { historyId: '00001', value: '150 บาท', date: '10 June 2019' },
+    { historyId: '00002', value: '658 บาท', date: '10 June 2019' },
+    { historyId: '00003', value: '150 บาท', date: '10 June 2019' },
+    { historyId: '00004', value: '4150 บาท', date: '10 June 2019' },
+    { historyId: '00005', value: '5150 บาท', date: '10 June 2019' },
+  ]
+}
+
+function getListItems(historyId) {
+  return [
+    { listItemId: '00001', value: 'โออิชิ 5 ขวด' },
+    { listItemId: '00002', value: 'แป๊ปซี่ 2 ลัง' }
+  ]
 }
 
 function getProducts(){
@@ -125,5 +167,9 @@ export const dataService = {
     getStatusData,
     getProduct,
     getProducts,
-    getOrders
+    getOrders,
+    getUsers,
+    getUser,
+    getHistory,
+    getListItems
 };

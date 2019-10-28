@@ -164,7 +164,7 @@ class ProductPage extends React.Component {
                       <TableCell
                         key={column.id}
                         align={column.align}
-                        style={{ minWidth: column.minWidth }}
+                        style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
                       >
                         {column.label}
                       </TableCell>
@@ -178,7 +178,7 @@ class ProductPage extends React.Component {
                         {columns.map(column => {
                           const value = row[column.id];
                           return (
-                            <TableCell key={column.id} align={column.align}>
+                            <TableCell key={value} align={column.align}>
                               {column.format && typeof value === 'number' ? column.format(value)
                                 :
                                 column.special?

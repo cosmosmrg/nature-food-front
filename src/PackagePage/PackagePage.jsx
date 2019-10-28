@@ -150,11 +150,11 @@ class PackagePage extends React.Component {
                 <TableBody>
                   {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code} onClick={(e) => {this.statusDetail(e, row.orderNo)}}>
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.orderNo} onClick={(e) => {this.statusDetail(e, row.orderNo)}}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (
-                            <TableCell key={column.id} align={column.align}>
+                            <TableCell key={value} align={column.align}>
                               {column.format && typeof value === 'number' ? column.format(value)
                                 :
                                 column.special?
