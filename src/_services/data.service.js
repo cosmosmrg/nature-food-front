@@ -51,6 +51,26 @@ function getUsers() {
   ];
 }
 
+function getBankSlip() {
+  function createData(transactionId, transactionDate, UserId, statusId) {
+    return { transactionId, transactionDate, UserId, statusId};
+  }
+  
+  return [
+    createData('00001', 'User A', '50 บาท', 'Pending'),
+    createData('00002', 'User B', '150 บาท', 'Reject'),
+    createData('00003', 'User B', '20 บาท', 'Complete'),
+    createData('00004', 'User B', '50 บาท', 'Pending'),
+    createData('00005', 'User C', '50 บาท', 'Complete'),
+    createData('00006', 'User C', '50 บาท', 'Reject'),
+    createData('00007', 'User A', '50 บาท', 'Pending'),
+    createData('00008', 'User A', '50 บาท', 'Complete'),
+    createData('00009', 'User C', '50 บาท', 'Pending'),
+    createData('00010', 'User A', '50 บาท', 'Reject'),
+    createData('00011', 'User A', '50 บาท', 'Pending'),
+  ];
+}
+
 function getUser(userId) {
   return this.getUsers().find(user => user.userId === userId);
 }
@@ -171,5 +191,6 @@ export const dataService = {
     getUsers,
     getUser,
     getHistory,
-    getListItems
+    getListItems,
+    getBankSlip
 };

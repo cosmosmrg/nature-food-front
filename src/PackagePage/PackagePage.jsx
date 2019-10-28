@@ -81,7 +81,7 @@ class PackagePage extends React.Component {
             minWidth: 120,
             align: 'center',
             special: (value, row) => 
-              <Fab size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor[value], color: 'white', textTransform: 'inherit', width: '100px'}}>
+              <Fab size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor[value], color: 'white', textTransform: 'inherit', width: '100px'}} disabled>
                 {row.status}
               </Fab>
           },
@@ -120,7 +120,7 @@ class PackagePage extends React.Component {
         const showOrderShipping = true;
         return (
           <>
-          <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} showOrderShipping={showOrderShipping} closeDialog={this.closeDialog} dialogState={dialogState}/>
+          <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} showOrderShipping={showOrderShipping} dialogState={dialogState}/>
           <Paper className={classes.root}>
               <Grid
                   container
