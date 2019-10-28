@@ -100,7 +100,7 @@ class UserPage extends React.Component {
           },
           {
             id: 'userId',
-            label: 'สถานะ',
+            label: '',
             minWidth: 120,
             align: 'center',
             special: value => 
