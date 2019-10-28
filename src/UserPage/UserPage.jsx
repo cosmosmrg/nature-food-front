@@ -15,7 +15,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { dataService } from '../_services/data.service'
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 import { withStyles } from '@material-ui/styles';
 import DialogDetailComponent from '../DialogDetailComponent'
@@ -29,6 +34,11 @@ export const styles = theme => ({
   },
   tableWrapper: {
     maxHeight: 407,
+    overflow: 'auto',
+  },
+  tabDetail: {
+    maxHeight: 300,
+    minHeight: 200,
     overflow: 'auto',
   },
   fab: {
@@ -59,6 +69,7 @@ class UserPage extends React.Component {
             confirmDialog: false,
             detailDialog: false,
             listItemDialog: false,
+            tabState: 0,
             data:[],
             userSelected: {},
             userDetail: {}
@@ -70,8 +81,8 @@ class UserPage extends React.Component {
         this.confirmDialogEvent.cancel = this.confirmDialogEvent.cancel.bind(this);
         this.detail = this.detail.bind(this);
         this.closeDialog = this.closeDialog.bind(this);
-        this.closeListItemDialog = this.closeListItemDialog.bind(this);
         this.customTemplate = this.customTemplate.bind(this);
+        this.onTabChange = this.onTabChange.bind(this);
 
         this.columns = [
           { id: 'email', label: 'อีเมล์', minWidth: 100 },
@@ -137,72 +148,82 @@ class UserPage extends React.Component {
       this.setState({detailDialog: false});
     }
 
-    closeListItemDialog(){
-      this.setState({listItemDialog: false});
-    }
-    
-    closeListItemDialog(){
-      this.setState({listItemDialog: false});
-    }
-    openListItems(e, historyId){
-      this.setState({detailDialog: false});
-      this.setState({listItemDialog: true});
+    onTabChange(event, tabState){
+      this.setState({tabState: tabState});
     }
 
     customTemplate() {
       const history = dataService.getHistory();
-      return (
-          <div style={{ width: '500px', borderRadius: '5px', backgroundColor: '#294b81', marginBottom: '10px', color: 'white', padding: '16px' }}>
-            <Typography variant="h6" >
-            คำสั่งซื้อ
-            </Typography>
-            <div style={{ paddingBottom: '10px', paddingTop: '10px' }}>
-              <Table aria-label="simple table" >
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{color: 'white'}}>ประวัติการโอนเงิน</TableCell>
-                    <TableCell align="right" style={{color: 'white'}}>จำนวนเงิน</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {history.map(row => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.historyId} displayBorder={false} onClick={(e) => this.openListItems(e, row.historyId)}>
-                      <TableCell style={{color: 'white'}}>{row.date}</TableCell>
-                      <TableCell align="right" style={{color: 'white'}}>{row.value}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        
-      )
-    }
-
-    customListItemTemplate() {
       const lsItem = dataService.getListItems();
+      const { tabState } = this.state;
+      const { classes } = this.props;
+      function a11yProps(index) {
+        return {
+          id: `simple-tab-${index}`,
+          'aria-controls': `simple-tabpanel-${index}`,
+        };
+      }
+      function TabPanel(props) {
+        const { children, value, index, ...other } = props;
+      
+        return (
+          <Typography
+            component="div"
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+          >
+            <Box p={3}>{children}</Box>
+          </Typography>
+        );
+      }
+      TabPanel.propTypes = {
+        children: PropTypes.node,
+        index: PropTypes.any.isRequired,
+        value: PropTypes.any.isRequired,
+      };
       return (
-          <div style={{ width: '500px', borderRadius: '5px', backgroundColor: '#294b81', marginBottom: '10px', color: 'white', padding: '16px' }}>
-            <Typography variant="h6" >
-            คำสั่งซื้อ
-            </Typography>
-            <div style={{ paddingBottom: '10px', paddingTop: '10px' }}>
-              <Table aria-label="simple table" >
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{color: 'white'}}>รายการสินค้า</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {lsItem.map(row => (
-                    <TableRow role="checkbox" tabIndex={-1} key={row.listItemId} displayBorder={false}>
-                      <TableCell style={{color: 'white'}}>{row.value}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+         
+            <div style={{ paddingBottom: '10px' }}>
+            <AppBar position="static" style={{backgroundColor: '#294b81' ,borderTopLeftRadius: '5px', borderTopRightRadius: '5px'}}>
+              <Tabs value={tabState} onChange={this.onTabChange} aria-label="simple tabs example" indicatorColor="primary">
+                <Tab label="ประวัติการโอน" {...a11yProps(0)} />
+                <Tab label="ราชื่อสินค้า" {...a11yProps(1)} />
+              </Tabs>
+            </AppBar>
+            <TabPanel style={{backgroundColor: '#294b81', borderBottomRightRadius: '5px' ,borderBottomLeftRadius: '5px'}} value={tabState} index={0}>
+                <div className={classes.tabDetail}>
+                  <Table aria-label="simple table" >
+                    <TableBody>
+                      {history.map(row => (
+                        <TableRow role="checkbox" tabIndex={-1} key={row.historyId} >
+                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.date}</TableCell>
+                          <TableCell align="right" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.value}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+            </TabPanel>
+            <TabPanel style={{backgroundColor: '#294b81', borderBottomRightRadius: '5px' ,borderBottomLeftRadius: '5px'}} value={tabState} index={1}>
+              <div className={classes.tabDetail}>
+                <Table aria-label="simple table" >
+                  <TableBody>
+                    {lsItem.map(row => (
+                      <TableRow role="checkbox" tabIndex={-1} key={row.listItemId}>
+                        <TableCell  style={{color: 'white', borderBottomWidth: '0px',  padding: '10px 0'}}>{row.value}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabPanel>
+              
+              
             </div>
-          </div>
+
         
       )
     }
@@ -243,13 +264,13 @@ class UserPage extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { page, rowsPerPage, data, detailDialog, userDetail, listItemDialog } = this.state;
+        const { page, rowsPerPage, data, detailDialog, userDetail } = this.state;
         return (
           <>
           
           <Paper className={classes.root}>
           <DialogDetailComponent userDetail={userDetail} customTemplate={this.customTemplate} closeDialog={this.closeDialog} dialogState={detailDialog}/>
-          <DialogDetailComponent userDetail={userDetail} customTemplate={this.customListItemTemplate} closeDialog={this.closeListItemDialog} dialogState={listItemDialog}/>
+         
               {this.confirmDialog()}
               <Grid
                   container

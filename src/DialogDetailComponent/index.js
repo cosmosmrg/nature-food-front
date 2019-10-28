@@ -114,25 +114,25 @@ class DialogDetailComponent extends React.Component {
               open={dialogState}
             >
               <DialogContent style={{margin: '0 10px'}}>
-                <Typography variant="h6" style={{marginBottom: '16px'}}>
+                <div variant="h6" style={{marginBottom: '16px'}}>
                   รายละเอียดลูกค้า
-                </Typography>
-                <Typography style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
+                </div>
+                <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
                   <Typography style={{marginRight: '30px'}}>ชื่อ</Typography>
                   <Typography>{userDetail.name}</Typography>
-                </Typography>
-                <Typography style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
+                </div>
+                <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
                   <Typography style={{marginRight: '30px'}}>ที่อยู่</Typography>
                   <Typography>{userDetail.place}</Typography>
-                </Typography>
-                <Typography style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
+                </div>
+                <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
                   <Typography style={{marginRight: '30px'}}>อีเมล์</Typography>
                   <Typography>{userDetail.email}</Typography>
-                </Typography>
-                <Typography style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
+                </div>
+                <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
                   <Typography style={{marginRight: '30px'}}>เบอร์</Typography>
                   <Typography>{userDetail.phoneNumber}</Typography>
-                </Typography>
+                </div>
                 {customTemplate && customTemplate()}
                 {orderDetail && this.renderOrderDetail(orderDetail, showOrderShipping)}
                 {showStatus && this.renderStatus(orderDetail, closeDialog)}
