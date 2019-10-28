@@ -65,7 +65,7 @@ const columns = [
     special: value => {
       let statusColor;
       value === "Pending" ? statusColor = '#d9b128' : statusColor = '#27b95a'
-      return (<Fab size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor, color: 'white', width: '110px'}}>
+      return (<Fab disabled size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor, color: 'white', width: '110px'}}>
         {value}
       </Fab>)},
   },
