@@ -105,7 +105,7 @@ function getReport(startDate, endDate) {
     createData('9', '1 กิโลกรัม', 50, 1500, new Date(2019, 11, 12)),
     createData('10', '5 กิโลกรัม', 250, 300, new Date(2019, 5, 12)),
     createData('11', '5 กิโลกรัม', 250, 5000, new Date(2019, 5, 12)),
-    createData('12', '250 ml', 25, 800, new Date(2019, 10, 12)),
+    createData('12', '250 ml', 25, 800, new Date(2020, 3, 2)),
   ];
 }
 
@@ -118,15 +118,25 @@ function getReportChart(date, data) {
 
   function getMonths(){
     const months = [];
-    for(let i = date.from.month; i <= date.to.month; ++i){
-      months.push({name: monthNames[i - 1], value: i});
+
+    if(date.from.year !== date.to.year) {
+        for(let i = date.from.month; i <= 12; ++i){
+        months.push({name: monthNames[i - 1] + '/' + date.from.year, value: i, year: date.from.year});
+      }
+      for(let i = 1; i <= date.to.month; ++i){
+        months.push({name: monthNames[i - 1] + '/' + date.to.year, value: i, year: date.to.year});
+      }
+    }else{
+      for(let i = date.from.month; i <= date.to.month; ++i){
+        months.push({name: monthNames[i - 1], value: i, year: date.to.year});
+      }
     }
     return months;
   }
   const months = getMonths();
-  function sum(month){
+  function sum(month, year){
     let total = 0;
-    data.filter(x=> x.date.getMonth() === month).forEach(x=> total += x.value);
+    data.filter(x=> x.date.getMonth() === month && x.date.getFullYear() === year).forEach(x=> total += x.value);
     return total;
   }
 
@@ -156,13 +166,24 @@ function getReportChart(date, data) {
           '#3a99e0',
           '#3a99e0',
           '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
           '#3a99e0'
           ],
         borderColor: 'rgba(255,99,132,1)',
         borderWidth: 0,
         hoverBackgroundColor: 'rgba(255,99,132,0.4)',
         hoverBorderColor: 'rgba(255,99,132,1)',
-        data: getMonths().map(x => sum(x.value))
+        data: getMonths().map(x => sum(x.value, x.year))
       }
     ]
   };

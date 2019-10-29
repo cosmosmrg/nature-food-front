@@ -169,10 +169,12 @@ class ReportPage extends React.Component {
         };
         this.datePicker = {
           from: {
-            month: 1
+            month: 1,
+            year: 2019
           },
           to: {
-            month: 10
+            month: 10,
+            year: 2019
           }
         };
         this.handleChangePage = this.handleChangePage.bind(this);
@@ -208,10 +210,12 @@ class ReportPage extends React.Component {
     getReports(){
         const date = {
           from: {
-            month: now.getMonth() + 1
+            month: now.getMonth() + 1,
+            year: 2019
           },
           to: {
-            month: now.getMonth() + 1
+            month: now.getMonth() + 1,
+            year: 2019
           }
         }
         const data = dataService.getReport();
