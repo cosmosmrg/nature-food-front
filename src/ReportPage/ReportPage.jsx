@@ -14,8 +14,21 @@ import Fab from '@material-ui/core/Fab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { withStyles } from '@material-ui/styles';
+import {Bar} from 'react-chartjs-2';
 import _ from 'lodash'
+import { dataService } from '../_services/data.service';
 
+
+export const barOptions = {
+  maintainAspectRatio: false,
+  scales: {
+    yAxes: [{
+      ticks: {
+        beginAtZero: true
+      }
+    }]
+  }
+}
 
 const styles = theme => ({
     root: {
@@ -42,26 +55,8 @@ const styles = theme => ({
     }
   });
 
-  function createData(rank, product, quantity, value) {
-    return { rank, product, quantity, value };
-  }
-
-  const rows = [
-    createData('1', 'ข้าวหอม 1 กิโลกรัม', 50, 1500),
-    createData('2', 'กล้วย 5 กิโลกรัม', 250, 150),
-    createData('3', 'ควย 5 กิโลกรัม', 250, 5000),
-    createData('4', 'อิอิ 250 ml', 25, 800),
-    createData('5', 'งิงิ 1 กิโลกรัม', 50, 1500),
-    createData('6', 'หุหุ 5 กิโลกรัม', 250, 300),
-    createData('7', '5 กิโลกรัม', 250, 5000),
-    createData('8', '250 ml', 25, 800),
-    createData('9', '1 กิโลกรัม', 50, 1500),
-    createData('10', '5 กิโลกรัม', 250, 300),
-    createData('11', '5 กิโลกรัม', 250, 5000),
-    createData('12', '250 ml', 25, 800),
-  ];
-
 const now = new Date()
+
 class MonthBox extends React.Component {
     constructor(props, context) {
         super(props, context)
@@ -94,6 +89,7 @@ class MonthBox extends React.Component {
     }
 }
 
+
 class MonthPicker extends React.Component {
     constructor(props, context) {
         super(props, context)
@@ -104,6 +100,10 @@ class MonthPicker extends React.Component {
         this._handleClickRangeBox = this._handleClickRangeBox.bind(this)
         this.handleRangeChange = this.handleRangeChange.bind(this)
         this.handleRangeDismiss = this.handleRangeDismiss.bind(this)
+        if (typeof props.onChangecallBack === 'function') {
+          this.onChangecallBack = props.onChangecallBack.bind(this);
+        }
+        
     }
 
     componentWillReceiveProps(nextProps){
@@ -146,10 +146,13 @@ class MonthPicker extends React.Component {
         this.refs.pickRange.show()
     }
     handleRangeChange(value, text, listIndex) {
+      console.log(this.state.mrange);
+      
         //
     }
     handleRangeDismiss(value) {
         this.setState( {mrange: value} )
+        this.onChangecallBack(value);
     }
 }
 
@@ -161,10 +164,21 @@ class ReportPage extends React.Component {
             rowsPerPage:10,
             data:[],
             switchQuantityFilter: 'asc',
-            switchValueFilter: 'asc'
+            switchValueFilter: 'asc',
+            dataReport: {}
+        };
+        this.datePicker = {
+          from: {
+            month: 1
+          },
+          to: {
+            month: 10
+          }
         };
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.apply = this.apply.bind(this);
+        this.dataChange = this.dataChange.bind(this);
 
         this.columns = [
             { id: 'rank', label: 'อันดับ', minWidth: 50 },
@@ -188,11 +202,29 @@ class ReportPage extends React.Component {
     }
 
     componentDidMount(){
-        this.getProducts()
+        this.getReports()
     }
 
-    getProducts(){
-        this.setState({data: rows})
+    getReports(){
+        const date = {
+          from: {
+            month: 1
+          },
+          to: {
+            month: 10
+          }
+        }
+        const data = dataService.getReport();
+        this.setState({data: data});
+        this.setState({dataReport: dataService.getReportChart(date, data)});
+    }
+
+    apply(){
+      this.setState({dataReport: dataService.getReportChart(this.datePicker, this.state.data)});
+    }
+
+    dataChange(date){
+      this.datePicker = date;
     }
 
     filterReport = (switchQuantityFilter, switchValueFilter) => {
@@ -212,7 +244,7 @@ class ReportPage extends React.Component {
     }
     render() {
         const { classes } = this.props;
-        const { page,rowsPerPage,switchQuantityFilter,switchValueFilter,data } = this.state;
+        const { page, rowsPerPage, switchQuantityFilter,switchValueFilter, data,  dataReport} = this.state;
         return (
             <Paper className={classes.root}>
               <Grid
@@ -228,9 +260,11 @@ class ReportPage extends React.Component {
                   Report
                 </Fab>
               </Grid>
-              <div style={{display: 'flex', marginLeft: '15px'}}>
+              <div style={{display: 'flex', marginLeft: '15px', marginBottom: '10px'}}>
                 <Grid item xs={6} md={4} lm={4}>
-                    <MonthPicker />
+                    <MonthPicker onChangecallBack={this.dataChange}/>
+                    <h2>สรุปยอดขาย</h2>
+                    <h1>23,500</h1>
                 </Grid>
                 <Grid item xs={2} md={1} lm={1}>
                     <div className="box" onClick={this._handleClick}
@@ -241,12 +275,29 @@ class ReportPage extends React.Component {
                         marginLeft:'10%',
                         color:'white'
                     }}>
-                        <label>APPLY</label>
+                        <label onClick={this.apply} style={{cursor: 'poiter'}}>APPLY</label>
+                    </div>
+                </Grid>
+                <Grid item xs={12} md={6} lm={4}>
+                <div className="box" onClick={this._handleClick}
+                    style={{
+                        backgroundColor:'white',
+                        padding:5,
+                        textAlign:'center',
+                        marginLeft:'10%',
+                        color:'white'
+                    }}>
+                        <Bar
+          data={dataReport}
+          width={100}
+          height={250}
+          options={barOptions}
+        />
                     </div>
                 </Grid>
               </div>
-              <h2 style={{marginLeft: '15px', marginTop: '50px'}}>สรุปยอดขาย</h2>
-              <div style={{height: '200px'}} />
+              
+              
             <div className={classes.tableWrapper}>
               <Table>
                 <TableHead>
@@ -316,7 +367,7 @@ class ReportPage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={rows.length}
+              count={data.length}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{

@@ -87,6 +87,87 @@ function getUserDetail(orderNo) {
     return data.find(x=> x.orderNo === orderNo);
 }
 
+
+function getReport(startDate, endDate) {
+  function createData(rank, product, quantity, value, date) {
+    return { rank, product, quantity, value, date };
+  }
+
+  return [
+    createData('1', 'ข้าวหอม 1 กิโลกรัม', 50, 1500, new Date(2019, 5, 12)),
+    createData('2', 'กล้วย 5 กิโลกรัม', 250, 150, new Date(2019, 2, 12)),
+    createData('3', 'ควย 5 กิโลกรัม', 250, 5000, new Date(2019, 2, 12)),
+    createData('4', 'อิอิ 250 ml', 25, 800, new Date(2019, 3, 12)),
+    createData('5', 'งิงิ 1 กิโลกรัม', 50, 1500, new Date(2019, 4, 12)),
+    createData('6', 'หุหุ 5 กิโลกรัม', 250, 300, new Date(2019, 5, 12)),
+    createData('7', '5 กิโลกรัม', 250, 5000, new Date(2019, 5, 12)),
+    createData('8', '250 ml', 25, 800, new Date(2019, 5, 12)),
+    createData('9', '1 กิโลกรัม', 50, 1500, new Date(2019, 5, 12)),
+    createData('10', '5 กิโลกรัม', 250, 300, new Date(2019, 5, 12)),
+    createData('11', '5 กิโลกรัม', 250, 5000, new Date(2019, 5, 12)),
+    createData('12', '250 ml', 25, 800, new Date(2019, 10, 12)),
+  ];
+}
+
+function getReportChart(date, data) {
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+  ];
+
+  data = getReport();
+
+  function getMonths(){
+    const months = [];
+    for(let i = date.from.month; i <= date.to.month; ++i){
+      months.push({name: monthNames[i - 1], value: i});
+    }
+    return months;
+  }
+  const months = getMonths();
+  function sum(month){
+    let total = 0;
+    data.filter(x=> x.date.getMonth() === month).forEach(x=> total += x.value);
+    return total;
+  }
+
+  return {
+    labels: getMonths().map(x => x.name),
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    },
+    datasets: [
+      {
+        label: 'สรุปยอดขาย',
+        backgroundColor: [
+          '#59dce4',
+          '#4cd2e4',
+          '#42c8e3',
+          '#40bfe5',
+          '#40b5e2',
+          '#4aaadd',
+          '#56a1da',
+          '#489cdb',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0'
+          ],
+        borderColor: 'rgba(255,99,132,1)',
+        borderWidth: 0,
+        hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+        hoverBorderColor: 'rgba(255,99,132,1)',
+        data: getMonths().map(x => sum(x.value))
+      }
+    ]
+  };
+}
+
 function getStatusData(){
     return [
         { value: '1', label: 'Processing' },
@@ -171,5 +252,7 @@ export const dataService = {
     getUsers,
     getUser,
     getHistory,
-    getListItems
+    getListItems,
+    getReport,
+    getReportChart
 };
