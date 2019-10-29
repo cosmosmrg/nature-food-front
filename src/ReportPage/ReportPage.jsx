@@ -208,10 +208,10 @@ class ReportPage extends React.Component {
     getReports(){
         const date = {
           from: {
-            month: 1
+            month: now.getMonth() + 1
           },
           to: {
-            month: 10
+            month: now.getMonth() + 1
           }
         }
         const data = dataService.getReport();
@@ -231,7 +231,18 @@ class ReportPage extends React.Component {
         const sort = _.orderBy(this.state.data, ['quantity', 'value'], [switchQuantityFilter, switchValueFilter])
         this.setState({data: sort, switchQuantityFilter, switchValueFilter })
     }
-
+    sum(data){
+      function formatNumber(num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+      }
+      if (data && data.datasets && data.datasets[0] && data.datasets[0] && data.datasets[0].data) {
+        let total = 0;
+        data.datasets[0].data.forEach(x=> total += x);
+        return formatNumber(total);
+      }
+      return 0;
+      
+    }
     handleChangePage(event,newPage){
       this.setState({page: newPage})
     }
@@ -264,7 +275,7 @@ class ReportPage extends React.Component {
                 <Grid item xs={6} md={4} lm={4}>
                     <MonthPicker onChangecallBack={this.dataChange}/>
                     <h2>สรุปยอดขาย</h2>
-                    <h1>23,500</h1>
+                    <h1>{this.sum(dataReport)}</h1>
                 </Grid>
                 <Grid item xs={2} md={1} lm={1}>
                     <div className="box" onClick={this._handleClick}
