@@ -3,7 +3,63 @@ import { connect } from 'react-redux';
 import Picker from 'react-month-picker'
 import './month-picker.css'
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import Fab from '@material-ui/core/Fab';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import { withStyles } from '@material-ui/styles';
+import _ from 'lodash'
 
+
+const styles = theme => ({
+    root: {
+      width: '100%',
+    },
+    tableWrapper: {
+      maxHeight: 407,
+      overflow: 'auto',
+    },
+    fab: {
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+      boxShadow: '0 0 0',
+      color:'white',
+    },
+    fabTransparent:{
+      marginRight: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+      backgroundColor: 'transparent',
+      boxShadow: '0 0 0',
+    }
+  });
+
+  function createData(rank, product, quantity, value) {
+    return { rank, product, quantity, value };
+  }
+
+  const rows = [
+    createData('1', 'ข้าวหอม 1 กิโลกรัม', 50, 1500),
+    createData('2', 'กล้วย 5 กิโลกรัม', 250, 150),
+    createData('3', 'ควย 5 กิโลกรัม', 250, 5000),
+    createData('4', 'อิอิ 250 ml', 25, 800),
+    createData('5', 'งิงิ 1 กิโลกรัม', 50, 1500),
+    createData('6', 'หุหุ 5 กิโลกรัม', 250, 300),
+    createData('7', '5 กิโลกรัม', 250, 5000),
+    createData('8', '250 ml', 25, 800),
+    createData('9', '1 กิโลกรัม', 50, 1500),
+    createData('10', '5 กิโลกรัม', 250, 300),
+    createData('11', '5 กิโลกรัม', 250, 5000),
+    createData('12', '250 ml', 25, 800),
+  ];
 
 const now = new Date()
 class MonthBox extends React.Component {
@@ -98,35 +154,181 @@ class MonthPicker extends React.Component {
 }
 
 class ReportPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            page: 0,
+            rowsPerPage:10,
+            data:[],
+            switchQuantityFilter: 'asc',
+            switchValueFilter: 'asc'
+        };
+        this.handleChangePage = this.handleChangePage.bind(this);
+        this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
 
+        this.columns = [
+            { id: 'rank', label: 'อันดับ', minWidth: 50 },
+            { id: 'product', label: 'สินค้า', minWidth: 200  },
+            {
+              id: 'quantity',
+              label: 'จำนวน',
+              minWidth: 120,
+              align: 'left',
+              quantityFilter: true
+            },
+            {
+                id: 'value',
+                label: 'มูลค่า',
+                minWidth: 120,
+                align: 'left',
+                format: value => value.toLocaleString()+" บาท",
+                valueFilter: true
+            },
+          ];
+    }
+
+    componentDidMount(){
+        this.getProducts()
+    }
+
+    getProducts(){
+        this.setState({data: rows})
+    }
+
+    filterReport = (switchQuantityFilter, switchValueFilter) => {
+        const sort = _.orderBy(this.state.data, ['quantity', 'value'], [switchQuantityFilter, switchValueFilter])
+        this.setState({data: sort, switchQuantityFilter, switchValueFilter })
+    }
+
+    handleChangePage(event,newPage){
+      this.setState({page: newPage})
+    }
+
+    handleChangeRowsPerPage(event) {
+      this.setState({page: 0,rowsPerPage:event.target.value})
+    }
+    handleProductCreate(event){
+      this.props.history.push('/product/create')
+    }
     render() {
+        const { classes } = this.props;
+        const { page,rowsPerPage,switchQuantityFilter,switchValueFilter,data } = this.state;
         return (
-          <div>
-            <h1>ReportPage</h1>
-            <Grid
-                container
-                direction="row"
-                justify="space-between"
-                alignItems="flex-start"
-              >
-              <Grid item xs={6} md={4} lm={4}>
-                <MonthPicker/>
+            <Paper className={classes.root}>
+              <Grid
+                  container
+                  direction="row"
+                  justify="space-between"
+                  alignItems="flex-start"
+                >
+                <Fab variant="extended" aria-label="delete"
+                  className={classes.fabTransparent}
+                  style={{backgroundColor:'transparent',color:'black'}}
+                  disabled>
+                  Report
+                </Fab>
               </Grid>
-              <Grid item xs={2} md={1} lm={1}>
-                <div className="box" onClick={this._handleClick}
-                  style={{
-                    backgroundColor:'#1DD65D',
-                    padding:5,
-                    textAlign:'center',
-                    marginLeft:'10%',
-                    color:'white'
-                  }}>
-                    <label>APPLY</label>
-                </div>
-              </Grid>
-              <Grid item xs={4} md={7} lm={7}/>
-            </Grid>
-          </div>
+              <div style={{display: 'flex', marginLeft: '15px'}}>
+                <Grid item xs={6} md={4} lm={4}>
+                    <MonthPicker />
+                </Grid>
+                <Grid item xs={2} md={1} lm={1}>
+                    <div className="box" onClick={this._handleClick}
+                    style={{
+                        backgroundColor:'#1DD65D',
+                        padding:5,
+                        textAlign:'center',
+                        marginLeft:'10%',
+                        color:'white'
+                    }}>
+                        <label>APPLY</label>
+                    </div>
+                </Grid>
+              </div>
+              <h2 style={{marginLeft: '15px', marginTop: '50px'}}>สรุปยอดขาย</h2>
+              <div style={{height: '200px'}} />
+            <div className={classes.tableWrapper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {this.columns.map(column => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
+                      >
+                        <div style={{display: 'flex'}}>
+                            {column.label}
+                            {column.quantityFilter &&
+                                (switchQuantityFilter === 'asc' ?
+                                <ExpandMoreIcon
+                                    style={{ marginLeft: '5px', paddingBottom: '2px' }}
+                                    onClick={() => {
+                                        this.filterReport('desc', switchValueFilter)
+                                    }} />
+                                : <ExpandLessIcon
+                                    style={{ marginLeft: '5px', paddingBottom: '2px' }}
+                                    onClick={() => {
+                                        this.filterReport('asc', switchValueFilter)
+                                    }} />)
+                            }
+                            {column.valueFilter &&
+                                (switchValueFilter === 'asc' ?
+                                <ExpandMoreIcon
+                                    style={{ marginLeft: '5px', paddingBottom: '2px' }}
+                                    onClick={() => {
+                                        this.filterReport(switchQuantityFilter, 'desc')
+                                    }} />
+                                : <ExpandLessIcon
+                                    style={{ marginLeft: '5px', paddingBottom: '2px' }}
+                                    onClick={() => {
+                                        this.filterReport(switchQuantityFilter, 'asc')
+                                    }} />)
+                            }
+                        </div>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                    return (
+                      <TableRow style={{height: 83}} hover role="checkbox" tabIndex={-1} key={row.productID}>
+                        {this.columns.map(column => {
+                          const value = row[column.id];
+                          return (
+                            <TableCell key={value} align={column.align}>
+                              {column.format && typeof value === 'number' ? column.format(value)
+                                :
+                                column.special?
+                                  column.special(value)
+                                :
+                                value}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              backIconButtonProps={{
+                'aria-label': 'previous page',
+              }}
+              nextIconButtonProps={{
+                'aria-label': 'next page',
+              }}
+              onChangePage={this.handleChangePage}
+              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            />
+          </Paper>
         );
     }
 }
@@ -136,5 +338,5 @@ function mapState(state) {
     return { loggingIn };
 }
 
-const connectedReportPage = connect(mapState,)(ReportPage);
+const connectedReportPage = connect(mapState,)(withStyles(styles)(ReportPage));
 export { connectedReportPage as ReportPage };
