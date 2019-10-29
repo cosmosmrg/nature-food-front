@@ -273,9 +273,10 @@ class ReportPage extends React.Component {
                         padding:5,
                         textAlign:'center',
                         marginLeft:'10%',
-                        color:'white'
+                        color:'white',
+                        cursor: 'pointer'
                     }}>
-                        <label onClick={this.apply} style={{cursor: 'poiter'}}>APPLY</label>
+                        <label onClick={this.apply} style={{cursor: 'pointer'}} >APPLY</label>
                     </div>
                 </Grid>
                 <Grid item xs={12} md={6} lm={4}>
