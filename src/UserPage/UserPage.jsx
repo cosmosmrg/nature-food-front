@@ -144,6 +144,7 @@ class UserPage extends React.Component {
     }
 
     closeDialog(){
+      this.setState({confirmDialog: false});
       this.setState({detailDialog: false});
     }
 
