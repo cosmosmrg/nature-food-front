@@ -14,7 +14,7 @@ function getOrders(){
   function createData(orderCode, orderDate, buyer, price, status) {
     return { orderCode, orderDate, buyer, price, status };
   }
-  
+
   return [
     createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
     createData('AA122', '10 June 2019', 'User A', 250, 'Complete'),
@@ -35,7 +35,7 @@ function getUsers() {
   function createData(userId, email, name, balance, amount) {
     return { userId, email, name, balance, amount};
   }
-  
+
   return [
     createData('00001', 'user1@hotmail.com', 'User A', '50 บาท', 1),
     createData('00002', 'user2@hotmail.com', 'User B', '150 บาท', 1),
@@ -55,7 +55,7 @@ function getBankSlip() {
   function createData(transactionId, transactionDate, UserId, statusId) {
     return { transactionId, transactionDate, UserId, statusId};
   }
-  
+
   return [
     createData('00001', 'User A', '50 บาท', 'Pending'),
     createData('00002', 'User B', '150 บาท', 'Reject'),
@@ -105,6 +105,108 @@ function getUserDetail(orderNo) {
 
     ];
     return data.find(x=> x.orderNo === orderNo);
+}
+
+
+function getReport(startDate, endDate) {
+  function createData(rank, product, quantity, value, date) {
+    return { rank, product, quantity, value, date };
+  }
+
+  return [
+    createData('1', 'ข้าวหอม 1 กิโลกรัม', 50, 1500, new Date(2019, 5, 12)),
+    createData('2', 'กล้วย 5 กิโลกรัม', 250, 150, new Date(2019, 2, 12)),
+    createData('3', 'ควย 5 กิโลกรัม', 250, 5000, new Date(2019, 2, 12)),
+    createData('4', 'อิอิ 250 ml', 25, 800, new Date(2019, 3, 12)),
+    createData('5', 'งิงิ 1 กิโลกรัม', 50, 1500, new Date(2019, 4, 12)),
+    createData('6', 'หุหุ 5 กิโลกรัม', 250, 300, new Date(2019, 5, 12)),
+    createData('7', '5 กิโลกรัม', 250, 5000, new Date(2019, 5, 12)),
+    createData('8', '250 ml', 25, 800, new Date(2019, 10, 12)),
+    createData('9', '1 กิโลกรัม', 50, 1500, new Date(2019, 11, 12)),
+    createData('10', '5 กิโลกรัม', 250, 300, new Date(2019, 5, 12)),
+    createData('11', '5 กิโลกรัม', 250, 5000, new Date(2019, 5, 12)),
+    createData('12', '250 ml', 25, 800, new Date(2020, 3, 2)),
+  ];
+}
+
+function getReportChart(date, data) {
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+  ];
+
+  data = getReport();
+
+  function getMonths(){
+    const months = [];
+
+    if(date.from.year !== date.to.year) {
+        for(let i = date.from.month; i <= 12; ++i){
+        months.push({name: monthNames[i - 1] + '/' + date.from.year, value: i, year: date.from.year});
+      }
+      for(let i = 1; i <= date.to.month; ++i){
+        months.push({name: monthNames[i - 1] + '/' + date.to.year, value: i, year: date.to.year});
+      }
+    }else{
+      for(let i = date.from.month; i <= date.to.month; ++i){
+        months.push({name: monthNames[i - 1], value: i, year: date.to.year});
+      }
+    }
+    return months;
+  }
+  const months = getMonths();
+  function sum(month, year){
+    let total = 0;
+    data.filter(x=> x.date.getMonth() === month && x.date.getFullYear() === year).forEach(x=> total += x.value);
+    return total;
+  }
+
+  return {
+    labels: getMonths().map(x => x.name),
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    },
+    datasets: [
+      {
+        label: 'สรุปยอดขาย',
+        backgroundColor: [
+          '#59dce4',
+          '#4cd2e4',
+          '#42c8e3',
+          '#40bfe5',
+          '#40b5e2',
+          '#4aaadd',
+          '#56a1da',
+          '#489cdb',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0',
+          '#3a99e0'
+          ],
+        borderColor: 'rgba(255,99,132,1)',
+        borderWidth: 0,
+        hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+        hoverBorderColor: 'rgba(255,99,132,1)',
+        data: getMonths().map(x => sum(x.value, x.year))
+      }
+    ]
+  };
 }
 
 function getStatusData(){
@@ -192,5 +294,7 @@ export const dataService = {
     getUser,
     getHistory,
     getListItems,
+    getReport,
+    getReportChart,
     getBankSlip
 };
