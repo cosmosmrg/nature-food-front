@@ -7,6 +7,7 @@ import { alertActions } from '../_actions';
 import { PrivateRoute } from '../_components';
 import { ProductPage } from '../ProductPage';
 import { ProductCreatePage } from '../ProductCreatePage';
+import { ProductApprovalPage } from '../ProductApprovalPage';
 import { OrderPage } from '../OrderPage';
 import { PackagePage } from '../PackagePage';
 import { UserPage } from '../UserPage';
@@ -38,6 +39,7 @@ class App extends React.Component {
                                 <Route exact path="/" render={() => (<Redirect to="/product"/>)}/>
                                 <PrivateRoute exact path="/product" component={ProductPage} title="product"/>
                                 <PrivateRoute exact path="/product/:product" component={ProductCreatePage} title="product"/>
+                                <PrivateRoute exact path="/productApproval" component={ProductApprovalPage} title="product-approval"/>
                                 <PrivateRoute exact path="/order" component={OrderPage} title="order"/>
                                 <PrivateRoute exact path="/package" component={PackagePage} title="package"/>
                                 <PrivateRoute exact path="/user" component={UserPage} title="user"/>

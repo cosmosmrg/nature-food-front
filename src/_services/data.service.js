@@ -14,7 +14,7 @@ function getOrders(){
   function createData(orderCode, orderDate, buyer, price, status) {
     return { orderCode, orderDate, buyer, price, status };
   }
-  
+
   return [
     createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
     createData('AA122', '10 June 2019', 'User A', 250, 'Complete'),
@@ -35,7 +35,7 @@ function getUsers() {
   function createData(userId, email, name, balance, amount) {
     return { userId, email, name, balance, amount};
   }
-  
+
   return [
     createData('00001', 'user1@hotmail.com', 'User A', '50 บาท', 1),
     createData('00002', 'user2@hotmail.com', 'User B', '150 บาท', 1),
@@ -48,6 +48,26 @@ function getUsers() {
     createData('00009', 'user9@hotmail.com', 'User C', '50 บาท', 1),
     createData('00010', 'user10@hotmail.com', 'User A', '50 บาท', 1),
     createData('00011', 'user11@hotmail.com', 'User A', '50 บาท', 1),
+  ];
+}
+
+function getBankSlip() {
+  function createData(transactionId, transactionDate, UserId, statusId) {
+    return { transactionId, transactionDate, UserId, statusId};
+  }
+
+  return [
+    createData('00001', 'User A', '50 บาท', 'Pending'),
+    createData('00002', 'User B', '150 บาท', 'Reject'),
+    createData('00003', 'User B', '20 บาท', 'Complete'),
+    createData('00004', 'User B', '50 บาท', 'Pending'),
+    createData('00005', 'User C', '50 บาท', 'Complete'),
+    createData('00006', 'User C', '50 บาท', 'Reject'),
+    createData('00007', 'User A', '50 บาท', 'Pending'),
+    createData('00008', 'User A', '50 บาท', 'Complete'),
+    createData('00009', 'User C', '50 บาท', 'Pending'),
+    createData('00010', 'User A', '50 บาท', 'Reject'),
+    createData('00011', 'User A', '50 บาท', 'Pending'),
   ];
 }
 
@@ -275,5 +295,6 @@ export const dataService = {
     getHistory,
     getListItems,
     getReport,
-    getReportChart
+    getReportChart,
+    getBankSlip
 };

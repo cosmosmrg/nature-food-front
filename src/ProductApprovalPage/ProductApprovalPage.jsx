@@ -38,39 +38,6 @@ const styles = theme => ({
   }
 });
 
-const columns = [
-  { id: 'name', label: 'ชื่อสินค้า', minWidth: 200 },
-  { id: 'size', label: 'ขนาด', minWidth: 100 },
-  {
-    id: 'price',
-    label: 'ราคา',
-    minWidth: 120,
-    align: 'left',
-    format: value => value.toLocaleString()+" บาท"
-  },
-  {
-    id: 'seller',
-    label: 'ผู้ขาย',
-    minWidth: 120,
-    align: 'left',
-  },
-  {
-    id: 'status',
-    label: 'สถานะ',
-    minWidth: 120,
-    align: 'center',
-    special: value => value === "Subscribe"?
-      <Fab size="medium"
-        variant="extended"
-        aria-label="delete"
-        style={{margin: '10px', backgroundColor: '#AE27B9', color: 'white'}}
-        disabled>
-        {value}
-      </Fab>
-      :<h5>-</h5>,
-  },
-];
-
 function createData(name, size, price, seller,status) {
   return { name, size, price, seller,status };
 }
@@ -90,20 +57,62 @@ const rows = [
   createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
 ];
 
-class ProductPage extends React.Component {
+class ProductApprovalPage extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            page: 0,
-            rowsPerPage:10,
-            data:[]
-        };
-        this.handleChangePage = this.handleChangePage.bind(this);
-        this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
-        this.getProducts = this.getProducts.bind(this);
-        this.handleProductCreate= this.handleProductCreate.bind(this);
-        this.navigateProductApprovalPage= this.navigateProductApprovalPage.bind(this);
+      super(props);
+      this.state = {
+          page: 0,
+          rowsPerPage:10,
+          data:[]
+      };
+      this.getProducts = this.getProducts.bind(this);
+      this.handleChangePage = this.handleChangePage.bind(this);
+      this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+
+      this.columns = [
+        { id: 'name', label: 'ชื่อสินค้า', minWidth: 200 },
+        { id: 'size', label: 'ขนาด', minWidth: 100 },
+        {
+          id: 'price',
+          label: 'ราคา',
+          minWidth: 120,
+          align: 'left',
+          format: value => value.toLocaleString()+" บาท"
+        },
+        {
+          id: 'seller',
+          label: 'ผู้ขาย',
+          minWidth: 120,
+          align: 'left',
+        },
+        {
+          id: 'status',
+          label: '',
+          minWidth: 120,
+          align: 'center',
+          special: (productData) =>
+            <div>
+              <Fab size="medium"
+                variant="extended"
+                aria-label="delete"
+                style={{margin: '10px', backgroundColor: '#de183e', color: 'white', width: '100px'}}
+                onClick={(e) => this.rejectProduct(productData)}
+              >
+                ไม่อนุมัติ
+              </Fab>
+              <Fab size="medium"
+                variant="extended"
+                aria-label="delete"
+                style={{margin: '10px', backgroundColor: '#27b95f', color: 'white', width: '100px'}}
+                onClick={(e) => this.rejectProduct(productData)}
+              >
+                อนุมัติ
+              </Fab>
+            </div>
+        },
+      ];
     }
+
     componentDidMount(){
       this.getProducts()
     }
@@ -119,62 +128,35 @@ class ProductPage extends React.Component {
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
     }
-    navigateProductApprovalPage(event){
-      event.preventDefault()
-      this.props.history.push('/productApproval')
-    }
-    handleProductCreate(event){
-      this.props.history.push('/product/create')
-    }
-    handleProductEdit(event,productID){
-      this.props.history.push(`/product/${productID}`)
+
+    rejectProduct(productData) {
+      console.log('shoot reject product api', productData)
     }
 
     render() {
         const { classes } = this.props;
         const { page,rowsPerPage,data } = this.state;
+
         return (
           <Paper className={classes.root}>
-              <Grid
-                  container
-                  direction="row"
-                  justify="space-between"
-                  alignItems="flex-start"
-                >
-                <Fab variant="extended" aria-label="delete"
-                  className={classes.fabTransparent}
-                  style={{backgroundColor:'transparent',color:'black'}}
-                  disabled>
-                  Product
-                </Fab>
-                <div>
-                  <Fab
-                    size="medium"
-                    variant="extended"
-                    aria-label="delete"
-                    className={classes.fab}
-                    style={{backgroundColor:'#648EB5'}}
-                    onClick={this.navigateProductApprovalPage}
-                  >
-                    อนุมัติสินค้าใหม่
-                  </Fab>
-                  <Fab
-                    size="medium"
-                    variant="extended"
-                    aria-label="delete"
-                    className={classes.fab}
-                    style={{backgroundColor:'#0079EA'}}
-                    onClick={this.handleProductCreate}
-                  >
-                    เพิ่มสินค้าใหม่
-                  </Fab>
-                </div>
-              </Grid>
+            <Grid
+                container
+                direction="row"
+                justify="space-between"
+                alignItems="flex-start"
+              >
+              <Fab variant="extended" aria-label="delete"
+                className={classes.fabTransparent}
+                style={{backgroundColor:'transparent',color:'black'}}
+                disabled>
+                Product Approval
+              </Fab>
+            </Grid>
             <div className={classes.tableWrapper}>
               <Table>
                 <TableHead>
                   <TableRow>
-                    {columns.map(column => (
+                    {this.columns.map(column => (
                       <TableCell
                         key={column.id}
                         align={column.align}
@@ -188,15 +170,15 @@ class ProductPage extends React.Component {
                 <TableBody>
                   {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.productID} onClick={(e) => {this.handleProductEdit(e, row.productID)}}>
-                        {columns.map(column => {
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.productID}>
+                        {this.columns.map(column => {
                           const value = row[column.id];
                           return (
                             <TableCell key={value} align={column.align}>
                               {column.format && typeof value === 'number' ? column.format(value)
                                 :
                                 column.special?
-                                  column.special(value)
+                                  column.special(row)
                                 :
                                 value}
                             </TableCell>
@@ -233,5 +215,5 @@ function mapState(state) {
     return { loggingIn };
 }
 
-const connectedProductPage = connect(mapState,)(withStyles(styles)(ProductPage));
-export { connectedProductPage as ProductPage };
+const connectedProductApprovalPage = connect(mapState,)(withStyles(styles)(ProductApprovalPage));
+export { connectedProductApprovalPage as ProductApprovalPage };
