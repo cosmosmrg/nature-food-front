@@ -220,7 +220,7 @@ function getProducts(){
 function getProduct(productID){
   return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN)
         .then(data=>{
-          return JSON.parse(data).filter(x=> x._id === productID)
+          return data.filter(x=> x._id === productID)[0]
         })
 }
 

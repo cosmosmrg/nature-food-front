@@ -9,6 +9,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Badge from '@material-ui/core/Badge';
 import errorimage from '../static/errorimage.png';
 import { dataService } from '../_services/data.service'
 
@@ -55,30 +56,46 @@ class ProductCreatePage extends React.Component {
         this.state = {
             isCreate:true,
             product:{
+              _id:"",
               name:"",
               size:"",
               price:"",
               seller:"",
-              status:"Non-Subscribe",
-              picture:""
+              status:"active",
+              is_package:false,
+              image:""
             },
             isError:false
         };
         this.handleChange = this.handleChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
         this.handleBack= this.handleBack.bind(this)
+        this.handleBack= this.handleBack.bind(this)
+        this.removeImage = this.removeImage.bind(this)
 
     }
-
-    static getDerivedStateFromProps(props, state){
-      if(props.match.params.product !== "create" && state.isCreate === true){
-        console.log("props.match.params.product",props.match.params.product);
-        return {
-          isCreate:false,
-          product: dataService.getProduct(props.match.params.product)
-        }
+    componentDidMount(){
+      const {product} = this.props.match.params
+      const {isCreate} = this.state
+      if(product !== "create" && isCreate === true){
+        this.getProduct(product)
+        this.setState(() => ({ isCreate:false}))
       }
-      return state
+    }
+
+    getProduct(id){
+      dataService.getProduct(id)
+        .then(data => {
+          this.setState(() => ({ product:data}))
+        })
+        .catch(err=>{
+          if(err===401){
+            this.props.history.push('/login')
+          }
+          else{
+            this.setState(() => ({ product:undefined}))
+          }
+        })
     }
 
     getProductNotFoundError(){
@@ -108,6 +125,7 @@ class ProductCreatePage extends React.Component {
 
     onSubmit(event){
       if(this.validateForm()){
+        console.log("product",this.state.product);
         this.props.history.push('/product')
       }else{
         this.setState(() => ({ isError:true}))
@@ -119,6 +137,11 @@ class ProductCreatePage extends React.Component {
     }
     handleBack(event){
       this.props.history.push('/product')
+    }
+
+    removeImage(event){
+      console.log("product",this.state.product);
+      this.setState(() => ({ product:{...this.state.product,image: "" }}))
     }
 
     render() {
@@ -155,7 +178,7 @@ class ProductCreatePage extends React.Component {
                       <TextField
                         id="name"
                         className={classes.textField}
-                        value={product.name}
+                        value={product.name||""}
                         margin="normal"
                         name="name"
                         placeholder="ชื่อสินค้า"
@@ -171,7 +194,7 @@ class ProductCreatePage extends React.Component {
                       <TextField
                         id="size"
                         className={classes.textField}
-                        value={product.size}
+                        value={product.size||""}
                         margin="normal"
                         name="size"
                         placeholder="ขนาด"
@@ -187,7 +210,7 @@ class ProductCreatePage extends React.Component {
                       <TextField
                         id="price"
                         className={classes.textField}
-                        value={product.price}
+                        value={product.price||""}
                         margin="normal"
                         name="price"
                         placeholder="ราคา"
@@ -202,16 +225,27 @@ class ProductCreatePage extends React.Component {
                       />
                       <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend" style={{color:'black'}}>สถานะ</FormLabel>
-                        <RadioGroup aria-label="status" name="status" value={product.status} onChange={this.handleChange}>
-                          <FormControlLabel value="Non-Subscribe" control={<Radio />} label="Non-Subscribe" />
-                          <FormControlLabel value="Subscribe" control={<Radio />} label="Subscribe" />
+                        <RadioGroup aria-label="status" name="status" value={product.status||"active"} onChange={this.handleChange}>
+                          <FormControlLabel value="active" control={<Radio />} label="active" />
+                          <FormControlLabel value="cancel" control={<Radio />} label="cancel" />
                         </RadioGroup>
                       </FormControl>
                       <p>รูปภาพ</p>
-                      <img style={{ maxWidth: 210, maxHeight: 118}}
-                        alt={product.name}
-                        src={product.picture?product.picture:errorimage}
-                        onError={this.addDefaultSrc}/>
+                      {
+                        product.image?
+                        <Badge color="secondary" badgeContent="x" onClick={this.removeImage}>
+                          <img style={{ maxWidth: 210, maxHeight: 118}}
+                            alt={product.name}
+                            src={product.image}
+                            onError={this.addDefaultSrc}/>
+                        </Badge>
+                        :
+                        <img style={{ maxWidth: 210, maxHeight: 118}}
+                          alt={product.name}
+                          src={errorimage}
+                          onError={this.addDefaultSrc}/>
+                      }
+
                       <Fab size="medium" variant="extended" aria-label="delete"
                         className={classes.fab} style={{backgroundColor:'#0079EA',width:100}}
                         onClick={this.onSubmit}>
