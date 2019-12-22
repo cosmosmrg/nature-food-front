@@ -39,7 +39,11 @@ const styles = theme => ({
 });
 
 const columns = [
-  { id: 'name', label: 'ชื่อสินค้า', minWidth: 200 },
+  { id: 'name',
+    label: 'ชื่อสินค้า',
+    minWidth: 200,
+    special: value => <h5 style={{color:'#0079EA',textDecoration: 'underline'}}>{value}</h5> 
+  },
   { id: 'size', label: 'ขนาด', minWidth: 100 },
   {
     id: 'price',
@@ -52,42 +56,30 @@ const columns = [
     id: 'seller',
     label: 'ผู้ขาย',
     minWidth: 120,
-    align: 'left',
+    align: 'center',
+    special: value => value? <h5>{value}</h5>: <h5>-</h5>
   },
   {
     id: 'status',
     label: 'สถานะ',
     minWidth: 120,
     align: 'center',
-    special: value => value === "Subscribe"?
+  },
+  {
+    id: 'is_package',
+    label: 'แพ็คเกจ',
+    minWidth: 120,
+    align: 'center',
+    special: value => !value?
       <Fab size="medium"
         variant="extended"
         aria-label="delete"
         style={{margin: '10px', backgroundColor: '#AE27B9', color: 'white'}}
         disabled>
-        {value}
+        package
       </Fab>
       :<h5>-</h5>,
   },
-];
-
-function createData(name, size, price, seller,status) {
-  return { name, size, price, seller,status };
-}
-
-const rows = [
-  createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
-  createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-  createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
-  createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-  createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
-  createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-  createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
-  createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-  createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
-  createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-  createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
-  createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
 ];
 
 class ProductPage extends React.Component {
@@ -109,7 +101,11 @@ class ProductPage extends React.Component {
     }
 
     getProducts(){
-      this.setState(() => ({ data:dataService.getProducts()}))
+      dataService.getProducts()
+        .then(data => {
+          this.setState(() => ({ data:data}))
+        })
+
     }
 
     handleChangePage(event,newPage){
@@ -133,6 +129,8 @@ class ProductPage extends React.Component {
     render() {
         const { classes } = this.props;
         const { page,rowsPerPage,data } = this.state;
+        console.log("data",data);
+        console.log("size",data.length);
         return (
           <Paper className={classes.root}>
               <Grid
@@ -186,13 +184,14 @@ class ProductPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.productID} onClick={(e) => {this.handleProductEdit(e, row.productID)}}>
+                      <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
+                        tabIndex={-1} key={row._id} onClick={(e) => {this.handleProductEdit(e, row._id)}}>
                         {columns.map(column => {
                           const value = row[column.id];
                           return (
-                            <TableCell key={value} align={column.align}>
+                            <TableCell key={value+row._id} align={column.align}>
                               {column.format && typeof value === 'number' ? column.format(value)
                                 :
                                 column.special?
@@ -211,7 +210,7 @@ class ProductPage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={rows.length}
+              count={data.length}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{

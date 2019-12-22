@@ -1,8 +1,8 @@
+import { userService } from './user.service'
 function getPackages() {
     function createData(orderNo, transDate, buyer, transportWeek, status) {
         return { orderNo, transDate, buyer, transportWeek, status };
     }
-
     return [
         createData('AA123', '10 June 2019', 'คุณ สวดีดัด ทดสอบ', 1, 'Pending'),
         createData('AA122', '10 June 2019', 'คุณ ชาวโลก ทดสอบ', 2, 'Complete'),
@@ -237,25 +237,15 @@ function getListItems(historyId) {
 }
 
 function getProducts(){
-  function createData(productID, name, size, price, seller,status,picture) {
-    return { productID, name, size, price, seller,status,picture };
-  }
-
-  const data = [
-    createData('00001','ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', 'Non-Subscribe'),
-    createData('00002','ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-    createData('00003','ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', 'Non-Subscribe'),
-    createData('00004','นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-    createData('00005','ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', 'Non-Subscribe'),
-    createData('00006','ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-    createData('00007','ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', 'Non-Subscribe'),
-    createData('00008','นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-    createData('00009','ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', 'Non-Subscribe'),
-    createData('00010','ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-    createData('00011','ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', 'Non-Subscribe'),
-    createData('00012','นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-  ];
-  return data;
+  const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+  };
+  return fetch(process.env.REACT_APP_GET_PRODUCTS_DOMAIN, requestOptions)
+        .then(handleResponse)
+        .then(data=>{
+          return JSON.parse(data)
+        })
 }
 
 
@@ -298,3 +288,18 @@ export const dataService = {
     getReportChart,
     getBankSlip
 };
+
+function handleResponse(response) {
+    return response.text().then(text => {
+        const data = text;
+        if (!response.ok) {
+            if (response.status === 401) {
+                // auto logout if 401 response returned from api
+                userService.logout();
+            }
+            return Promise.reject("login error");
+        }
+
+        return data;
+    });
+}
