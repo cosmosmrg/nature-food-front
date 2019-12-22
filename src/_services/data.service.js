@@ -4,24 +4,7 @@ function getPackages() {
 }
 
 function getOrders(){
-  function createData(orderCode, orderDate, buyer, price, status) {
-    return { orderCode, orderDate, buyer, price, status };
-  }
-
-  return [
-    createData('AA123', '10 June 2019', 'User A', 50, 'Pending'),
-    createData('AA122', '10 June 2019', 'User A', 250, 'Complete'),
-    createData('AA121', '10 June 2019', 'User A', 250, 'Pending'),
-    createData('AA124', '10 June 2019', 'User A', 25, 'Complete'),
-    createData('AA125', '10 June 2019', 'User A', 50, 'Pending'),
-    createData('AA126', '10 June 2019', 'User A', 250, 'Complete'),
-    createData('AA127', '10 June 2019', 'User A', 250, 'Pending'),
-    createData('AA128', '10 June 2019', 'User A', 25, 'Complete'),
-    createData('AA129', '10 June 2019', 'User A', 50, 'Pending'),
-    createData('AA130', '10 June 2019', 'User A', 250, 'Complete'),
-    createData('AA131', '10 June 2019', 'User A', 250, 'Pending'),
-    createData('AA132', '10 June 2019', 'User A', 25, 'Complete'),
-  ];
+  return get(process.env.REACT_APP_GET_ORDERS_DOMAIN)
 }
 
 function getUsers() {

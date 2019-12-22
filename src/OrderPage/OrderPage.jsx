@@ -84,7 +84,19 @@ class OrderPage extends React.Component {
         this.dialogDetailElement = React.createRef();
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
-        this.rows = dataService.getOrders();
+        this.getOrders = this.getOrders.bind(this);
+        this.rows = [];
+    }
+    getOrders(){
+      dataService.getOrders()
+        .then(data => {
+          this.setState(() => ({ rows:data}))
+        })
+        .catch(err=>{
+          if(err===401){
+            this.props.history.push('/login')
+          }
+        })
     }
 
     handleChangePage(event,newPage){
