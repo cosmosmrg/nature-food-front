@@ -155,9 +155,10 @@ class OrderPage extends React.Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                    {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
                       return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.orderCode}>
+                        <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
+                          tabIndex={-1} key={row.orderCode}>
                           {columns.map(column => {
                             const value = row[column.id];
                             return (
