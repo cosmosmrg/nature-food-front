@@ -60,6 +60,7 @@ class PackagePage extends React.Component {
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
         this.statusDetail = this.statusDetail.bind(this);
+        this.getPackages = this.getPackages.bind(this);
         this.columns = [
           { id: 'orderNo', label: 'รหัสคำสั่งซื้อ', minWidth: 100 },
           { id: 'transDate', label: 'วันที่ทำรายการ', minWidth: 100 },
@@ -80,14 +81,28 @@ class PackagePage extends React.Component {
             label: 'สถานะ',
             minWidth: 120,
             align: 'center',
-            special: (value, row) => 
+            special: (value, row) =>
               <Fab size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor[value], color: 'white', textTransform: 'inherit', width: '100px'}} disabled>
                 {row.status}
               </Fab>
           },
         ];
-        
-        this.rows = dataService.getPackages();
+        this.rows = [];
+    }
+    componentDidMount(){
+      this.getPackages()
+    }
+
+    getPackages(){
+      dataService.getPackages()
+        .then(data => {
+          this.setState(() => ({ rows:data}))
+        })
+        .catch(err=>{
+          if(err===401){
+            this.props.history.push('/login')
+          }
+        })
     }
 
     statusDetail(e, orderNo){
@@ -148,9 +163,10 @@ class PackagePage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.orderNo} onClick={(e) => {this.statusDetail(e, row.orderNo)}}>
+                      <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
+                        tabIndex={-1} key={row.orderNo} onClick={(e) => {this.statusDetail(e, row.orderNo)}}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (

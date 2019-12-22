@@ -42,7 +42,7 @@ const columns = [
   { id: 'name',
     label: 'ชื่อสินค้า',
     minWidth: 200,
-    special: value => <h5 style={{color:'#0079EA',textDecoration: 'underline'}}>{value}</h5> 
+    special: value => <h5 style={{color:'#0079EA',textDecoration: 'underline'}}>{value}</h5>
   },
   { id: 'size', label: 'ขนาด', minWidth: 100 },
   {
@@ -104,6 +104,11 @@ class ProductPage extends React.Component {
       dataService.getProducts()
         .then(data => {
           this.setState(() => ({ data:data}))
+        })
+        .catch(err=>{
+          if(err===401){
+            this.props.history.push('/login')
+          }
         })
 
     }
