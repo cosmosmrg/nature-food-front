@@ -1,10 +1,15 @@
 import { userService } from './user.service'
 export const createService = {
-    createProduct
+    createProduct,
+    editProduct
 };
 
 function createProduct(product){
-  return post(process.env.REACT_APP_LOGIN_DOMAIN, product)
+  return post(process.env.REACT_APP_CREATE_PRODUCT_DOMAIN, product)
+}
+
+function editProduct(product){
+  return post(process.env.REACT_APP_EDIT_PRODUCT_DOMAIN, product)
 }
 
 function post(url,json){

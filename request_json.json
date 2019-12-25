@@ -1,0 +1,153 @@
+
+
+get-product
+res [{
+    "_id": "5db7a85c19cead324808ba36",
+    "name": "test",
+    "size": "2 kg",
+    "price": 100,
+    "image": "test this should be base 64",
+    "is_package": false,
+    "status": "A",
+    "__v": 0,
+    "seller": "Nature Food",
+}]
+
+edit-product
+req {
+  "id": "5db7a82319cead324808ba35",
+  "name": "test",
+  "size": "2 kg",
+  "price": 100,
+  "image": "test this should be base 64",
+  "is_package": false,
+  "seller": "Nature Food",
+  "status": "A"
+}
+
+get-order-list
+res[
+  id:
+  create_time
+  buyer
+  total_price,
+  status
+]
+
+get-order
+res{
+  id
+  buyer_name:
+  buyer_address:
+  email:
+  tel:
+  order:[{
+    name,
+    amount,
+    price
+  }]
+  total_price:,
+  status
+}
+status(order) -> Processing, Arrived in Local Warehouse, Delivered, Shipped, Dispathing from Local Warehouse, Complete
+
+get-package-list
+res[
+  id
+  create_time
+  buyer
+  total_price,
+  status
+]
+
+status(package) -> Processing,Ongoing, Complete
+
+get-package
+
+res{
+  id
+  buyer_name:
+  buyer_address:
+  email:
+  tel:
+  duration,
+  deliverweek,
+  start-date,
+  end-date,
+  order:[{
+    name,
+    amount,
+    price
+  }]
+  total_price:,
+  status
+}
+
+get-user-list
+[
+  {
+    email,
+    name,
+    total_waiting...,
+    item_amount
+  }
+]
+get-user
+{
+  name,
+  address,
+  email,
+  tel,
+  transfer_history:[{
+    date,
+    amount
+  }],
+  products:[
+    {
+      name,
+      amount,
+    }
+  ]
+}
+
+getBankSlip-list
+[
+  {
+    id,
+    date,
+    name,
+    status,
+    orderid
+  }
+]
+status -> pending, reject, approve
+
+getbankSlip
+{
+  id,
+  name,
+  address,
+  tel,
+  image
+}
+
+update-bankslip-status
+req {
+  status -> success/ fail
+  bankslip_id, amount
+}
+
+get-report start_date, end_date, page, limit, sort_by,desc
+res {
+  total_sale,
+  sale:[
+    month, amount
+  ],
+  item:[
+    {
+      product,
+      sale_amount,
+      sale_price
+    }
+  ]
+}

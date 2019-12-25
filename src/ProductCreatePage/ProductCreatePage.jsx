@@ -12,6 +12,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Badge from '@material-ui/core/Badge';
 import errorimage from '../static/errorimage.png';
 import { dataService } from '../_services/data.service'
+import { createService } from '../_services/create.service'
 
 import { withStyles } from '@material-ui/styles';
 
@@ -72,6 +73,7 @@ class ProductCreatePage extends React.Component {
         this.handleBack= this.handleBack.bind(this)
         this.handleBack= this.handleBack.bind(this)
         this.removeImage = this.removeImage.bind(this)
+        this.fileSelectedHandler = this.fileSelectedHandler.bind(this)
 
     }
     componentDidMount(){
@@ -125,8 +127,28 @@ class ProductCreatePage extends React.Component {
 
     onSubmit(event){
       if(this.validateForm()){
+        const { isCreate } = this.state;
         console.log("product",this.state.product);
-        this.props.history.push('/product')
+        if(isCreate){
+          createService.createProduct(this.state.product)
+            .then(data =>{
+              console.log("onCreate",data);
+              this.props.history.push('/product')
+            })
+            .catch(err =>{
+              console.log(err);
+            })
+        }
+        else{
+          createService.editProduct(this.state.product)
+            .then(data =>{
+              console.log("onEdit",data);
+              this.props.history.push('/product')
+            })
+            .catch(err =>{
+              console.log(err);
+            })
+        }
       }else{
         this.setState(() => ({ isError:true}))
       }
@@ -140,8 +162,11 @@ class ProductCreatePage extends React.Component {
     }
 
     removeImage(event){
-      console.log("product",this.state.product);
       this.setState(() => ({ product:{...this.state.product,image: "" }}))
+    }
+    fileSelectedHandler(event){
+      event.persist()
+      this.setState(() => ({ product:{...this.state.product,image: URL.createObjectURL(event.target.files[0])}}))
     }
 
     render() {
@@ -230,6 +255,13 @@ class ProductCreatePage extends React.Component {
                           <FormControlLabel value="cancel" control={<Radio />} label="cancel" />
                         </RadioGroup>
                       </FormControl>
+                      <FormControl component="fieldset" className={classes.formControl}>
+                        <FormLabel component="legend" style={{color:'black'}}>แพ็คเกจ</FormLabel>
+                        <RadioGroup aria-label="status" name="status" value={product.is_package.toString()||"true"} onChange={this.handleChange}>
+                          <FormControlLabel value="true" control={<Radio />} label="ใช่" />
+                          <FormControlLabel value="false" control={<Radio />} label="ไม่ใช่" />
+                        </RadioGroup>
+                      </FormControl>
                       <p>รูปภาพ</p>
                       {
                         product.image?
@@ -244,6 +276,7 @@ class ProductCreatePage extends React.Component {
                           alt={product.name}
                           src={errorimage}
                           onError={this.addDefaultSrc}/>
+                        // <input type="file" onChange={this.fileSelectedHandler}/>
                       }
 
                       <Fab size="medium" variant="extended" aria-label="delete"
