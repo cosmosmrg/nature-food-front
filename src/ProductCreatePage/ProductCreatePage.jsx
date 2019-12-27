@@ -154,38 +154,48 @@ class ProductCreatePage extends React.Component {
       }
 
       const { product } = this.state
-      const preparedObj = {
-        id: product.id,
-        name: product.name,
-        size: product.size,
-        price: product.price,
-        image: product.image,
-        seller: product.seller,
-        is_package: product.is_package,
-        status: product.status,
-      }
 
       if(this.validateForm()){
         const { isCreate } = this.state;
+        const preparedCreateObj = {
+          name: product.name,
+          size: product.size,
+          price: product.price,
+          image: product.image,
+          // seller: product.seller,
+          is_package: product.is_package,
+          // status: product.status,
+        }
+
         if(isCreate){
-          createService.createProduct(preparedObj)
-            .then(data =>{
-              console.log("onCreate",data);
-              this.props.history.push('/product')
-            })
-            .catch(err =>{
-              console.log(err);
-            })
+          createService.createProduct(preparedCreateObj)
+            // .then(data =>{
+            //   console.log("onCreate",data);
+            //   this.props.history.push('/product')
+            // })
+            // .catch(err =>{
+            //   console.log(err);
+            // })
         }
         else{
-          createService.editProduct(preparedObj)
-            .then(data =>{
-              console.log("onEdit",data);
-              this.props.history.push('/product')
-            })
-            .catch(err =>{
-              console.log(err);
-            })
+          const preparedEditObj = {
+            id: product._id,
+            name: product.name,
+            size: product.size,
+            price: product.price,
+            image: product.image,
+            // seller: product.seller,
+            is_package: product.is_package,
+            status: product.status,
+          }
+          createService.editProduct(preparedEditObj)
+            // .then(data =>{
+            //   console.log("onEdit",data);
+            //   this.props.history.push('/product')
+            // })
+            // .catch(err =>{
+            //   console.log(err);
+            // })
         }
       }else{
         this.setState(() => ({ isError:true}))
