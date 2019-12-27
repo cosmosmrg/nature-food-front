@@ -87,6 +87,11 @@ class OrderPage extends React.Component {
         this.getOrders = this.getOrders.bind(this);
         this.rows = [];
     }
+
+    componentDidMount(){
+      this.getOrders()
+    }
+
     getOrders(){
       dataService.getOrders()
         .then(data => {

@@ -19,14 +19,19 @@ function uploadImageProduct(image){
 }
 
 function post(url,json){
-  var oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
+  const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
+  console.log()
   const requestOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': oauth2,
-        'Access-Control-Allow-Origin': 'http://ec2-52-76-61-0.ap-southeast-1.compute.amazonaws.com',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+        'Access-Control-Allow-Headers': 'X-Requested-With,content-type',
+        'Access-Control-Allow-Credentials': true
       },
+      // mode: 'no-cors',
       // body: JSON.stringify(json)
       body: json
   };
