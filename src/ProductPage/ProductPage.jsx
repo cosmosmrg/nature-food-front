@@ -103,11 +103,11 @@ class ProductPage extends React.Component {
     getProducts(){
       dataService.getProducts()
         .then(data => {
-          this.setState(() => ({ data:data}))
+          this.setState(() => ({ data:data.docs}))
         })
         .catch(err=>{
           if(err===401){
-            this.props.history.push('/login')
+            // this.props.history.push('/login')
           }
         })
 
@@ -134,8 +134,8 @@ class ProductPage extends React.Component {
     render() {
         const { classes } = this.props;
         const { page,rowsPerPage,data } = this.state;
-        console.log("data",data);
-        console.log("size",data.length);
+        // console.log("data",data);
+        // console.log("size",data.length);
         return (
           <Paper className={classes.root}>
               <Grid

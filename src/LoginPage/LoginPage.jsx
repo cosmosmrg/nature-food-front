@@ -102,6 +102,7 @@ class LoginPage extends React.Component {
 
         this.setState({ submitted: true });
         const { username, password } = this.state;
+        console.log(username, password)
         if (username && password) {
             this.props.login(username, password);
         }
@@ -159,10 +160,61 @@ class LoginPage extends React.Component {
                   LOGIN
                 </StyledButton>
               </form>
+              <StyledButton
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  onClick={() => {
+                    const xdata = {
+                      "email": "gee-test@x.com",
+                      "password": "123456",
+                      "name": "gee",
+                      "address": "",
+                      "tel": "0812345678"
+                    }
+
+                    const requestOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(xdata)
+                    };
+                    return fetch('http://ec2-52-76-61-0.ap-southeast-1.compute.amazonaws.com:3010/v2/signup', requestOptions)
+                        .then(handleResponse)
+                        .then(token => {
+                            // store user details and jwt token in local storage to keep user logged in between page refreshes
+                            console.log('token', token)
+                            localStorage.setItem('user', JSON.stringify({"token":token}));
+                            console.log(localStorage)
+
+
+                            return {"token":token};
+                        });
+
+                  }}
+                >
+                  SIGN UP
+              </StyledButton>
             </Card>
           </Container>
         );
     }
+}
+
+function handleResponse(response) {
+  return response.text().then(text => {
+      const data = text;
+      if (!response.ok) {
+          if (response.status === 401) {
+              // auto logout if 401 response returned from api
+              console.log('error 401')
+          }
+
+          return Promise.reject("login error");
+      }
+
+      return data;
+  });
 }
 
 function mapState(state) {

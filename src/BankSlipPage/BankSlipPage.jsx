@@ -103,7 +103,7 @@ class BankSlipPage extends React.Component {
     }
 
     componentDidMount(){
-      this.getBankSlip()
+      // this.getBankSlip()
     }
 
     getBankSlip(){

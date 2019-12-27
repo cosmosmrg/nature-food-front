@@ -220,7 +220,8 @@ function getProducts(){
 function getProduct(productID){
   return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN)
         .then(data=>{
-          return data.filter(x=> x._id === productID)[0]
+          console.log('getProduct', data)
+          return data.docs.filter(x=> x._id === productID)[0]
         })
 }
 
@@ -243,7 +244,7 @@ export const dataService = {
 };
 
 function get(url){
-  var oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
+  const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
   const requestOptions = {
       method: 'GET',
       headers: {
@@ -251,9 +252,11 @@ function get(url){
         'Authorization': oauth2
       }
   };
+
   return fetch(url, requestOptions)
         .then(handleResponse)
         .then(data=>{
+          console.log('data product', data)
           return JSON.parse(data)
         })
 }

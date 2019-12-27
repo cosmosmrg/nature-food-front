@@ -6,16 +6,17 @@ export const userService = {
 function login(username, password) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ "email":username, password })
     };
     return fetch(process.env.REACT_APP_LOGIN_DOMAIN, requestOptions)
         .then(handleResponse)
         .then(token => {
-            // store user details and jwt token in local storage to keep user logged in between page refreshes
-            localStorage.setItem('user', JSON.stringify({"token":token}));
+            localStorage.setItem('user', token);
 
-            return {"token":token};
+            return token;
         });
 }
 

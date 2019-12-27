@@ -90,7 +90,7 @@ class PackagePage extends React.Component {
         this.rows = [];
     }
     componentDidMount(){
-      this.getPackages()
+      // this.getPackages()
     }
 
     getPackages(){

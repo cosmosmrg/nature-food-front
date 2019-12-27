@@ -1,7 +1,8 @@
 import { userService } from './user.service'
 export const createService = {
     createProduct,
-    editProduct
+    editProduct,
+    uploadImageProduct
 };
 
 function createProduct(product){
@@ -12,16 +13,25 @@ function editProduct(product){
   return post(process.env.REACT_APP_EDIT_PRODUCT_DOMAIN, product)
 }
 
+function uploadImageProduct(image){
+  console.log('image', image)
+  return post(process.env.REACT_APP_UPLOAD_IMAGE_PRODUCT_DOMAIN, image)
+}
+
 function post(url,json){
   var oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
   const requestOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': oauth2
+        'Authorization': oauth2,
+        'Access-Control-Allow-Origin': 'http://ec2-52-76-61-0.ap-southeast-1.compute.amazonaws.com',
       },
-      body: JSON.stringify(json)
+      // body: JSON.stringify(json)
+      body: json
   };
+
+  console.log(url, requestOptions)
   return fetch(url, requestOptions)
         .then(handleResponse)
 }

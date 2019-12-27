@@ -204,7 +204,7 @@ class ReportPage extends React.Component {
     }
 
     componentDidMount(){
-        this.getReports()
+        // this.getReports()
     }
 
     getReports(){
