@@ -41,6 +41,8 @@ export const styles = theme => ({
   }
 });
 
+//package (subscription)-> pending, processing, deliever, completed
+
 const statusColor = {
   Pending: '#d9b028',
   Ongoing: '#2775b9',
@@ -53,7 +55,8 @@ class PackagePage extends React.Component {
         this.state = {
             page: 0,
             rowsPerPage:10,
-            dialogState: false
+            dialogState: false,
+            packageList: []
         };
         this.dialogDetailElement = React.createRef();
         this.userDetail = {};
@@ -90,13 +93,13 @@ class PackagePage extends React.Component {
         this.rows = [];
     }
     componentDidMount(){
-      // this.getPackages()
+      this.getPackages()
     }
 
     getPackages(){
       dataService.getPackages()
         .then(data => {
-          this.setState(() => ({ rows:data}))
+          this.setState(() => ({ packageList:data}))
         })
         .catch(err=>{
           if(err===401){
@@ -130,9 +133,11 @@ class PackagePage extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { page, rowsPerPage, dialogState } = this.state;
+        const { page, rowsPerPage, dialogState, userList } = this.state;
         const showStatus = true;
         const showOrderShipping = true;
+
+        console.log('userList', userList)
         return (
           <>
           <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} showOrderShipping={showOrderShipping} dialogState={dialogState}/>

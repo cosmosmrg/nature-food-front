@@ -42,16 +42,16 @@ const styles = theme => ({
 });
 
 const columns = [
-  { id: 'orderCode', label: 'รหัสคำสั่งซื้อ', minWidth: 200 },
-  { id: 'orderDate', label: 'วันที่ทำรายการ', minWidth: 100 },
+  { id: '_id', label: 'รหัสคำสั่งซื้อ', minWidth: 200 },
+  { id: 'created_time', label: 'วันที่ทำรายการ', minWidth: 100 },
   {
-    id: 'buyer',
+    id: 'user',
     label: 'ชื่อผู้ซื้อ',
     minWidth: 120,
     align: 'left',
   },
   {
-    id: 'price',
+    id: 'total_price',
     label: 'ราคา',
     minWidth: 120,
     align: 'left',
@@ -64,6 +64,7 @@ const columns = [
     align: 'center',
     special: value => {
       let statusColor;
+      //pending, processing, delievered
       value === "Pending" ? statusColor = '#d9b128' : statusColor = '#27b95a'
       return (<Fab disabled size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor, color: 'white', width: '110px'}}>
         {value}
@@ -79,6 +80,7 @@ class OrderPage extends React.Component {
             page: 0,
             rowsPerPage: 10,
             dialogState: false,
+            orderList: []
         };
         this.userDetail = {};
         this.dialogDetailElement = React.createRef();
@@ -95,7 +97,7 @@ class OrderPage extends React.Component {
     getOrders(){
       dataService.getOrders()
         .then(data => {
-          this.setState(() => ({ rows:data}))
+          this.setState(() => ({ orderList:data}))
         })
         .catch(err=>{
           if(err===401){
@@ -128,8 +130,10 @@ class OrderPage extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { page, rowsPerPage, dialogState } = this.state;
+        const { page, rowsPerPage, dialogState, orderList } = this.state;
         const showStatus = true;
+
+        console.log('orderList', orderList)
         return (
           <>
             <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} orderDetail={this.packageDetail} closeDialog={this.closeDialog} dialogState={dialogState} showStatus={showStatus}/>
@@ -160,14 +164,14 @@ class OrderPage extends React.Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
+                    {orderList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order,index) => {
                       return (
                         <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
-                          tabIndex={-1} key={row.orderCode}>
+                          tabIndex={-1} key={order.orderCode}>
                           {columns.map(column => {
-                            const value = row[column.id];
+                            const value = order[column.id];
                             return (
-                              <TableCell key={column.id} align={column.align} onClick={(e) => {this.orderDetail(e, row.orderCode)}}>
+                              <TableCell key={column.id} align={column.align} onClick={(e) => {this.orderDetail(e, order.orderCode)}}>
                                 {column.format && typeof value === 'number' ? column.format(value)
                                   :
                                   column.special?
