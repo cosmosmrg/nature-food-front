@@ -137,7 +137,6 @@ class PackagePage extends React.Component {
         const showStatus = true;
         const showOrderShipping = true;
 
-        console.log('userList', userList)
         return (
           <>
           <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} closeDialog={this.closeDialog} orderDetail={this.packageDetail} showStatus={showStatus} showOrderShipping={showOrderShipping} dialogState={dialogState}/>

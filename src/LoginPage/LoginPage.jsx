@@ -102,7 +102,6 @@ class LoginPage extends React.Component {
 
         this.setState({ submitted: true });
         const { username, password } = this.state;
-        console.log(username, password)
         if (username && password) {
             this.props.login(username, password);
         }

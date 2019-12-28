@@ -218,9 +218,9 @@ function getProducts(){
 
 
 function getProduct(productID){
+  //TODO change api
   return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN)
         .then(data=>{
-          console.log('getProduct', data)
           return data.docs.filter(x=> x._id === productID)[0]
         })
 }

@@ -30,7 +30,6 @@ function post(url,json) {
         'Content-Type': 'application/json',
         'Authorization': oauth2,
       },
-      // body: JSON.stringify(json)
       data: json
   };
   return axios(requestOptions)

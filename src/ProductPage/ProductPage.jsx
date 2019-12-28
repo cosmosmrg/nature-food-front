@@ -134,8 +134,7 @@ class ProductPage extends React.Component {
     render() {
         const { classes } = this.props;
         const { page,rowsPerPage,data } = this.state;
-        // console.log("data",data);
-        // console.log("size",data.length);
+
         return (
           <Paper className={classes.root}>
               <Grid
