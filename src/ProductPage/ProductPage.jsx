@@ -57,7 +57,7 @@ const columns = [
     label: 'ผู้ขาย',
     minWidth: 120,
     align: 'center',
-    special: value => value? <h5>{value}</h5>: <h5>-</h5>
+    special: value => value? <h5>{value.shop_name}</h5>: <h5>-</h5>
   },
   {
     id: 'status',
