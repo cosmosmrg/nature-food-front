@@ -61,12 +61,13 @@ class ProductCreatePage extends React.Component {
               name:"",
               size:"",
               price:"",
+              image:"",
               seller:"",
-              status:"active",
               is_package:false,
-              image:""
+              status:"active",
             },
-            isError:false
+            isError:false,
+            image : ""
         };
         this.handleChange = this.handleChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
@@ -88,7 +89,9 @@ class ProductCreatePage extends React.Component {
     getProduct(id){
       dataService.getProduct(id)
         .then(data => {
-          this.setState(() => ({ product:data}))
+          if (data.image) {
+            this.setState(() => ({ product:data, image: data.image}))
+          }
         })
         .catch(err=>{
           if(err===401){
@@ -125,33 +128,70 @@ class ProductCreatePage extends React.Component {
       ev.target.src = errorimage
     }
 
-    onSubmit(event){
-      if(this.validateForm()){
-        const { isCreate } = this.state;
-        console.log("product",this.state.product);
-        if(isCreate){
-          createService.createProduct(this.state.product)
-            .then(data =>{
-              console.log("onCreate",data);
-              this.props.history.push('/product')
-            })
-            .catch(err =>{
-              console.log(err);
-            })
-        }
-        else{
-          createService.editProduct(this.state.product)
-            .then(data =>{
-              console.log("onEdit",data);
-              this.props.history.push('/product')
-            })
-            .catch(err =>{
-              console.log(err);
-            })
-        }
-      }else{
-        this.setState(() => ({ isError:true}))
+    uploadImage = () => {
+      const { image } = this.state
+      let data = image
+
+      if (this.state.product.image !== image) {
+        const imageBase64 = { photo: image.split("data:image/jpeg;base64,")[1] };
+
+        createService.uploadImageProduct(JSON.stringify(imageBase64))
+          .then(res => {
+            data = res.data.src
+          })
       }
+
+      return Promise.resolve(data)
+    }
+    onSubmit(event){
+      this.uploadImage()
+      .then(result => {
+        const { product } = this.state
+
+        if(this.validateForm()){
+          const { isCreate } = this.state;
+          if(isCreate){
+            const preparedCreateObj = {
+              name: product.name,
+              size: product.size,
+              price: product.price,
+              image: result,
+              // seller: product.seller,
+              is_package: product.is_package,
+              // status: product.status,
+            }
+
+            createService.createProduct(preparedCreateObj)
+              .then(res =>{
+                if (!res) return
+                if (res.status === 200) {
+                  this.props.history.push('/product')
+                }
+              })
+          }
+          else{
+            const preparedEditObj = {
+              id: product._id,
+              name: product.name,
+              size: product.size,
+              price: product.price,
+              image: result,
+              // seller: product.seller,
+              is_package: product.is_package,
+              status: product.status,
+            }
+            createService.editProduct(preparedEditObj)
+            .then(res =>{
+              if (!res) return
+              if (res.status === 200) {
+                this.props.history.push('/product')
+              }
+            })
+          }
+        } else {
+          this.setState(() => ({ isError:true}))
+        }
+      })
     }
     validateForm(){
       const {product} = this.state;
@@ -162,16 +202,34 @@ class ProductCreatePage extends React.Component {
     }
 
     removeImage(event){
-      this.setState(() => ({ product:{...this.state.product,image: "" }}))
+      this.setState(() => ({ image: "" }))
     }
     fileSelectedHandler(event){
       event.persist()
       this.setState(() => ({ product:{...this.state.product,image: URL.createObjectURL(event.target.files[0])}}))
     }
 
+    onImageChange = (event) => {
+      if (event.target.files && event.target.files[0]) {
+        var reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+
+        reader.onloadend = () => {
+          var base64data = reader.result;
+          console.log('base64data', base64data)
+          return this.setState({
+            image: base64data
+          });
+        }
+      }
+     }
+
     render() {
         const { classes } = this.props;
         const { isCreate, product,isError } = this.state;
+
+        console.log(this.state.image)
+
         return (
           <Paper className={classes.root}>
               <Grid
@@ -264,19 +322,17 @@ class ProductCreatePage extends React.Component {
                       </FormControl>
                       <p>รูปภาพ</p>
                       {
-                        product.image?
-                        <Badge color="secondary" badgeContent="x" onClick={this.removeImage}>
-                          <img style={{ maxWidth: 210, maxHeight: 118}}
-                            alt={product.name}
-                            src={product.image}
-                            onError={this.addDefaultSrc}/>
-                        </Badge>
-                        :
-                        <img style={{ maxWidth: 210, maxHeight: 118}}
-                          alt={product.name}
-                          src={errorimage}
-                          onError={this.addDefaultSrc}/>
-                        // <input type="file" onChange={this.fileSelectedHandler}/>
+                        <div style={{display: 'flex', flexDirection: 'column'}}>
+                          <input style={{marginBottom: '20px'}} type="file" onChange={this.onImageChange} className="filetype" id="group_image"/>
+                          <div style={{display: 'flex'}}>
+                            <img style={{ maxWidth: 210, maxHeight: 118 }}
+                              alt={product.name}
+                              src={this.state.image}
+                              onError={this.addDefaultSrc}
+                            />
+                            <Badge style={{ display: 'block' }} color="secondary" badgeContent="x" onClick={this.removeImage} />
+                          </div>
+                        </div>
                       }
 
                       <Fab size="medium" variant="extended" aria-label="delete"

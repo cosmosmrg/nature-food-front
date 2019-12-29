@@ -112,7 +112,7 @@ class UserPage extends React.Component {
     }
 
     componentDidMount(){
-      this.getUsers()
+      // this.getUsers()
     }
 
     getUsers(){

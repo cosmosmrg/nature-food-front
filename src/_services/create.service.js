@@ -1,7 +1,10 @@
 import { userService } from './user.service'
+const axios = require('axios');
+
 export const createService = {
     createProduct,
-    editProduct
+    editProduct,
+    uploadImageProduct
 };
 
 function createProduct(product){
@@ -12,31 +15,34 @@ function editProduct(product){
   return post(process.env.REACT_APP_EDIT_PRODUCT_DOMAIN, product)
 }
 
-function post(url,json){
-  var oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
-  const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': oauth2
-      },
-      body: JSON.stringify(json)
-  };
-  return fetch(url, requestOptions)
-        .then(handleResponse)
+function uploadImageProduct(image){
+  return post(process.env.REACT_APP_UPLOAD_IMAGE_PRODUCT_DOMAIN, image)
 }
 
-function handleResponse(response) {
-    return response.text().then(text => {
-        const data = text;
-        if (!response.ok) {
-            if (response.status === 401) {
-                // auto logout if 401 response returned from api
-                userService.logout();
-            }
-            return Promise.reject(response.status);
-        }
+function post(url,json) {
+  const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
 
-        return data;
-    });
+  console.log(url, json)
+  const requestOptions = {
+      method: 'POST',
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': oauth2,
+      },
+      data: json
+  };
+  return axios(requestOptions)
+  .then(res => {
+    if (res.statusCode === 401) {
+      userService.logout();
+
+      return false
+    }
+
+    return res
+  })
+  .catch(error => {
+    console.error(error)
+  })
 }

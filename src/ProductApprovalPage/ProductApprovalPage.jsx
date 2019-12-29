@@ -114,7 +114,7 @@ class ProductApprovalPage extends React.Component {
     }
 
     componentDidMount(){
-      this.getProducts()
+      // this.getProducts()
     }
 
     getProducts(){
