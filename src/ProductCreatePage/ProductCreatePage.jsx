@@ -171,7 +171,7 @@ class ProductCreatePage extends React.Component {
           }
           else{
             const preparedEditObj = {
-              id: product._id,
+              _id: product._id,
               name: product.name,
               size: product.size,
               price: product.price,
@@ -216,7 +216,7 @@ class ProductCreatePage extends React.Component {
 
         reader.onloadend = () => {
           var base64data = reader.result;
-          console.log('base64data', base64data)
+
           return this.setState({
             image: base64data
           });
@@ -227,8 +227,6 @@ class ProductCreatePage extends React.Component {
     render() {
         const { classes } = this.props;
         const { isCreate, product,isError } = this.state;
-
-        console.log(this.state.image)
 
         return (
           <Paper className={classes.root}>

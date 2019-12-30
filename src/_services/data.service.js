@@ -28,23 +28,24 @@ function getUsers() {
 }
 
 function getBankSlip() {
-  function createData(transactionId, transactionDate, UserId, statusId) {
-    return { transactionId, transactionDate, UserId, statusId};
-  }
+  return get(process.env.REACT_APP_GET_ADMINS_SLIP_DOMAIN)
+  // function createData(transactionId, transactionDate, UserId, statusId) {
+  //   return { transactionId, transactionDate, UserId, statusId};
+  // }
 
-  return [
-    createData('00001', 'User A', '50 บาท', 'Pending'),
-    createData('00002', 'User B', '150 บาท', 'Reject'),
-    createData('00003', 'User B', '20 บาท', 'Complete'),
-    createData('00004', 'User B', '50 บาท', 'Pending'),
-    createData('00005', 'User C', '50 บาท', 'Complete'),
-    createData('00006', 'User C', '50 บาท', 'Reject'),
-    createData('00007', 'User A', '50 บาท', 'Pending'),
-    createData('00008', 'User A', '50 บาท', 'Complete'),
-    createData('00009', 'User C', '50 บาท', 'Pending'),
-    createData('00010', 'User A', '50 บาท', 'Reject'),
-    createData('00011', 'User A', '50 บาท', 'Pending'),
-  ];
+  // return [
+  //   createData('00001', 'User A', '50 บาท', 'Pending'),
+  //   createData('00002', 'User B', '150 บาท', 'Reject'),
+  //   createData('00003', 'User B', '20 บาท', 'Complete'),
+  //   createData('00004', 'User B', '50 บาท', 'Pending'),
+  //   createData('00005', 'User C', '50 บาท', 'Complete'),
+  //   createData('00006', 'User C', '50 บาท', 'Reject'),
+  //   createData('00007', 'User A', '50 บาท', 'Pending'),
+  //   createData('00008', 'User A', '50 บาท', 'Complete'),
+  //   createData('00009', 'User C', '50 บาท', 'Pending'),
+  //   createData('00010', 'User A', '50 บาท', 'Reject'),
+  //   createData('00011', 'User A', '50 บาท', 'Pending'),
+  // ];
 }
 
 function getUser(userId) {
@@ -212,8 +213,13 @@ function getListItems(historyId) {
   ]
 }
 
-function getProducts(){
-  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN)
+function getProducts(limit, page){
+  console.log('limit, page', limit, page)
+  let query = ''
+  if (limit & page) {
+    query = `?limit=${limit}&page=${page}`
+  }
+  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN + query)
 }
 
 
@@ -256,19 +262,23 @@ function get(url){
   return fetch(url, requestOptions)
         .then(handleResponse)
         .then(data=>{
-          console.log('data product', data)
+          console.log('get data', data)
           return JSON.parse(data)
         })
 }
 
 function handleResponse(response) {
     return response.text().then(text => {
+        console.log('text', text)
         const data = text;
         if (!response.ok) {
             if (response.status === 401) {
                 // auto logout if 401 response returned from api
                 userService.logout();
             }
+
+            console.log('response.status', response.status)
+
             return Promise.reject(response.status);
         }
 

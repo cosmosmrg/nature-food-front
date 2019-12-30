@@ -97,11 +97,11 @@ class ProductPage extends React.Component {
         this.navigateProductApprovalPage= this.navigateProductApprovalPage.bind(this);
     }
     componentDidMount(){
-      this.getProducts()
+      this.getProducts(2,0)
     }
 
-    getProducts(){
-      dataService.getProducts()
+    getProducts(limit, page){
+      dataService.getProducts(limit, page)
         .then(data => {
           this.setState(() => ({ data:data.docs}))
         })
@@ -188,7 +188,8 @@ class ProductPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
+                  {/* {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => { */}
+                  {data.map((row,index) => {
                     return (
                       <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
                         tabIndex={-1} key={row._id} onClick={(e) => {this.handleProductEdit(e, row._id)}}>

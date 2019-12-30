@@ -41,7 +41,7 @@ export const styles = theme => ({
   }
 });
 
-//package (subscription)-> pending, processing, deliever, completed
+//TODO package (subscription)-> pending, processing, deliever, completed
 
 const statusColor = {
   Pending: '#d9b028',

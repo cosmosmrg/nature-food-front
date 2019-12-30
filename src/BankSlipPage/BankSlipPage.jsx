@@ -65,6 +65,7 @@ class BankSlipPage extends React.Component {
             detailDialog: false,
             tabState: 0,
             data:[],
+            BankSlipList: [],
             userSelected: {},
             userDetail: {},
             isError: false,
@@ -103,11 +104,19 @@ class BankSlipPage extends React.Component {
     }
 
     componentDidMount(){
-      // this.getBankSlip()
+      this.getBankSlip()
     }
 
     getBankSlip(){
-      this.setState(() => ({ data: dataService.getBankSlip()}));
+      dataService.getBankSlip()
+        .then(data => {
+          this.setState(() => ({ BankSlipList:data}))
+        })
+        .catch(err=>{
+          if(err===401){
+            this.props.history.push('/login')
+          }
+        })
     }
 
     handleChangePage(event,newPage){
@@ -142,7 +151,10 @@ class BankSlipPage extends React.Component {
 
     customTemplate() {
       const { classes } = this.props;
-      const { product, isError } = this.state;
+      const { product, isError, BankSlipList } = this.state;
+
+      console.log('BankSlipList', BankSlipList)
+
       return (
           <Grid
             container
@@ -150,7 +162,7 @@ class BankSlipPage extends React.Component {
             justify="space-between"
             alignItems="flex-start"
           >
-          
+
           <img style={{ maxWidth: 210, maxHeight: 118}}
             alt={product.amount}
             src={product.picture?product.picture:errorimage}
