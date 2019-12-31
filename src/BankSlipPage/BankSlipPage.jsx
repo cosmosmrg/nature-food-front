@@ -64,8 +64,22 @@ class BankSlipPage extends React.Component {
             rowsPerPage:10,
             detailDialog: false,
             tabState: 0,
-            data:[],
-            BankSlipList: [],
+            dataCount: 0,
+            data:[
+              {
+                _id: "5e0b400d35742b0ba1856c82",
+                email: "may-test@x.com",
+                created_time: "2019-12-31T12:33:17.389Z",
+                status: "pending",
+                __v: 0
+              }, {
+                _id: "5e0b400d35742b0ba1856c82",
+                email: "may-test@x.com",
+                created_time: "2019-12-31T12:33:17.389Z",
+                status: "pending",
+                __v: 0
+              }
+          ],
             userSelected: {},
             userDetail: {},
             isError: false,
@@ -82,16 +96,16 @@ class BankSlipPage extends React.Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.handleChangeValue = this.handleChangeValue.bind(this);
         this.columns = [
-          { id: 'transactionId', label: 'รหัสการโอน', minWidth: 100 },
-          { id: 'transactionDate', label: 'วันที่ทำรายการ', minWidth: 100 },
+          { id: '_id', label: 'รหัสการโอน', minWidth: 100 },
+          { id: 'created_time', label: 'วันที่ทำรายการ', minWidth: 100 },
           {
-            id: 'UserId',
+            id: 'email',
             label: 'ชื่อผู้โอน',
             minWidth: 200,
             align: 'left',
           },
           {
-            id: 'statusId',
+            id: 'status',
             label: 'สถานะ',
             minWidth: 120,
             align: 'center',
@@ -104,13 +118,13 @@ class BankSlipPage extends React.Component {
     }
 
     componentDidMount(){
-      this.getBankSlip()
+      // this.getBankSlip(10,1)
     }
 
-    getBankSlip(){
-      dataService.getBankSlip()
+    getBankSlip(limit, page){
+      dataService.getBankSlip(limit, page)
         .then(data => {
-          this.setState(() => ({ BankSlipList:data}))
+          this.setState(() => ({ data:data.docs, dataCount: data.total}))
         })
         .catch(err=>{
           if(err===401){
@@ -239,9 +253,10 @@ class BankSlipPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {data.map((row,index) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.transactionId} onClick={(e) => this.detail(e, row.userId)}>
+                      <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
+                      tabIndex={-1} key={row.transactionId} onClick={(e) => this.detail(e, row.userId)}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (

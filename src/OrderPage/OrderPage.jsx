@@ -81,7 +81,16 @@ class OrderPage extends React.Component {
             rowsPerPage: 10,
             dialogState: false,
             dataCount: 0,
-            data: []
+            data: [
+              {
+                _id: "5e0b33f135742b0ba1856c81",
+                user: "5e039819b822791dabaadf7f",
+                status: "pending",
+                created_time: "2019-12-31T11:41:37.810Z",
+                items: [],
+                total_price: 0
+              }
+            ]
         };
         this.userDetail = {};
         this.dialogDetailElement = React.createRef();
@@ -92,7 +101,7 @@ class OrderPage extends React.Component {
     }
 
     componentDidMount(){
-      this.getOrders(10,1)
+      // this.getOrders(10,1)
     }
 
     getOrders(limit, page){
