@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import { dataService } from '../_services/data.service'
+import { createService } from '../_services/create.service'
 
 import { withStyles } from '@material-ui/styles';
 
@@ -64,14 +65,18 @@ class ProductApprovalPage extends React.Component {
           page: 0,
           rowsPerPage:10,
           dataCount: 0,
-          data:[]
+          data: []
       };
       this.getWaitingApproveProducts = this.getWaitingApproveProducts.bind(this);
       this.handleChangePage = this.handleChangePage.bind(this);
       this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
 
       this.columns = [
-        { id: 'name', label: 'ชื่อสินค้า', minWidth: 200 },
+        { id: 'name',
+          label: 'ชื่อสินค้า',
+          minWidth: 200,
+          special: value => <h5 style={{color:'#0079EA',textDecoration: 'underline'}}>{value}</h5>
+        },
         { id: 'size', label: 'ขนาด', minWidth: 100 },
         {
           id: 'price',
@@ -84,44 +89,69 @@ class ProductApprovalPage extends React.Component {
           id: 'seller',
           label: 'ผู้ขาย',
           minWidth: 120,
-          align: 'left',
+          align: 'center',
+          special: value => value? <h5>{value.shop_name}</h5>: <h5>-</h5>
         },
         {
           id: 'status',
+          label: 'สถานะ',
+          minWidth: 120,
+          align: 'center',
+        },
+        {
+          id: 'is_package',
+          label: 'แพ็คเกจ',
+          minWidth: 120,
+          align: 'center',
+          special: value => value?
+            <Fab size="medium"
+              variant="extended"
+              aria-label="delete"
+              style={{margin: '10px', backgroundColor: '#AE27B9', color: 'white'}}
+              disabled>
+              package
+            </Fab>
+            :<h5>-</h5>,
+        },
+        {
+          id: '_id',
           label: '',
           minWidth: 120,
           align: 'center',
-          special: (productData) =>
-            <div>
-              <Fab size="medium"
-                variant="extended"
-                aria-label="delete"
-                style={{margin: '10px', backgroundColor: '#de183e', color: 'white', width: '100px'}}
-                onClick={(e) => this.rejectProduct(productData)}
-              >
-                ไม่อนุมัติ
-              </Fab>
-              <Fab size="medium"
-                variant="extended"
-                aria-label="delete"
-                style={{margin: '10px', backgroundColor: '#27b95f', color: 'white', width: '100px'}}
-                onClick={(e) => this.rejectProduct(productData)}
-              >
-                อนุมัติ
-              </Fab>
-            </div>
+          special: (productId) => {
+            return (
+              <div>
+                <Fab size="medium"
+                  variant="extended"
+                  aria-label="delete"
+                  style={{margin: '10px', backgroundColor: '#de183e', color: 'white', width: '100px'}}
+                  onClick={(e) => this.rejectProduct(productId)}
+                >
+                  ไม่อนุมัติ
+                </Fab>
+                <Fab size="medium"
+                  variant="extended"
+                  aria-label="delete"
+                  style={{margin: '10px', backgroundColor: '#27b95f', color: 'white', width: '100px'}}
+                  onClick={(e) => this.approveProduct(productId)}
+                >
+                  อนุมัติ
+                </Fab>
+              </div>
+            )
+          }
+
         },
       ];
     }
 
     componentDidMount(){
-      this.getWaitingApproveProducts()
+      this.getWaitingApproveProducts(10,1)
     }
 
     getWaitingApproveProducts(limit, page){
       dataService.getWaitingApproveProducts(limit, page)
         .then(data => {
-          console.log('get data', data)
           this.setState(() => ({ data:data.docs, dataCount:data.total}))
         })
         .catch(err=>{
@@ -141,7 +171,22 @@ class ProductApprovalPage extends React.Component {
     }
 
     rejectProduct(productData) {
-      console.log('shoot reject product api', productData)
+      this.shootApprovalApi(productData, false)
+    }
+
+    approveProduct(productData) {
+      this.shootApprovalApi(productData, true)
+    }
+
+    shootApprovalApi(productData, is_approve) {
+      const { page, rowsPerPage } = this.state
+      const JSONData = { _id: productData, is_approve }
+      createService.approvalProduct(JSONData)
+      .then(res =>{
+        if (!res) return
+
+        this.getWaitingApproveProducts(rowsPerPage,page+1)
+      })
     }
 
     render() {
@@ -179,17 +224,18 @@ class ProductApprovalPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {data.map((row,index) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.productID}>
+                      <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
+                        tabIndex={-1} key={row._id}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (
-                            <TableCell key={value} align={column.align}>
+                            <TableCell key={value+row._id} align={column.align}>
                               {column.format && typeof value === 'number' ? column.format(value)
                                 :
                                 column.special?
-                                  column.special(row)
+                                  column.special(value)
                                 :
                                 value}
                             </TableCell>
@@ -204,7 +250,7 @@ class ProductApprovalPage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={rows.length}
+              count={this.state.dataCount}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{

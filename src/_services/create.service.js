@@ -4,20 +4,9 @@ const axios = require('axios');
 export const createService = {
     createProduct,
     editProduct,
-    uploadImageProduct
+    uploadImageProduct,
+    approvalProduct
 };
-
-function createProduct(product){
-  return post(process.env.REACT_APP_CREATE_PRODUCT_DOMAIN, product)
-}
-
-function editProduct(product){
-  return post(process.env.REACT_APP_EDIT_PRODUCT_DOMAIN, product)
-}
-
-function uploadImageProduct(image){
-  return post(process.env.REACT_APP_UPLOAD_IMAGE_PRODUCT_DOMAIN, image)
-}
 
 function post(url,json) {
   const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
@@ -50,4 +39,21 @@ function post(url,json) {
   .catch(error => {
     console.error(error)
   })
+}
+
+// Product
+function createProduct(product){
+  return post(process.env.REACT_APP_CREATE_PRODUCT_DOMAIN, product)
+}
+
+function editProduct(product){
+  return post(process.env.REACT_APP_EDIT_PRODUCT_DOMAIN, product)
+}
+
+function approvalProduct(productId){
+  return post(process.env.REACT_APP_POST_APPROVE_PRODUCTS_DOMAIN, productId)
+}
+
+function uploadImageProduct(image){
+  return post(process.env.REACT_APP_UPLOAD_IMAGE_PRODUCT_DOMAIN, image)
 }
