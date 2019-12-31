@@ -61,13 +61,13 @@ class ProductCreatePage extends React.Component {
               name:"",
               size:"",
               price:"",
-              image:"",
+              image: errorimage,
               seller:"",
               is_package:false,
               status:"active",
             },
             isError:false,
-            image : ""
+            image : errorimage
         };
         this.handleChange = this.handleChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
@@ -132,12 +132,14 @@ class ProductCreatePage extends React.Component {
       const { image } = this.state
       let data = image
 
-      if (this.state.product.image !== image) {
-        const imageBase64 = { photo: image.split("data:image/jpeg;base64,")[1] };
+      if (this.state.product.image !== image && image) {
+        const imageBase64 = { photo: image.split("base64,")[1] };
 
-        createService.uploadImageProduct(JSON.stringify(imageBase64))
+        return createService.uploadImageProduct(JSON.stringify(imageBase64))
           .then(res => {
+
             data = res.data.src
+            return Promise.resolve(data)
           })
       }
 
@@ -171,7 +173,7 @@ class ProductCreatePage extends React.Component {
           }
           else{
             const preparedEditObj = {
-              id: product._id,
+              _id: product._id,
               name: product.name,
               size: product.size,
               price: product.price,
@@ -216,19 +218,25 @@ class ProductCreatePage extends React.Component {
 
         reader.onloadend = () => {
           var base64data = reader.result;
-          console.log('base64data', base64data)
-          return this.setState({
-            image: base64data
-          });
+
+          if (base64data.split("base64,")[0].includes("data:image")) {
+            return this.setState({
+              image: base64data
+            });
+          } else {
+            return this.setState({
+              image: errorimage
+            });
+          }
         }
+      } else {
+        event.target.src = errorimage
       }
      }
 
     render() {
         const { classes } = this.props;
         const { isCreate, product,isError } = this.state;
-
-        console.log(this.state.image)
 
         return (
           <Paper className={classes.root}>

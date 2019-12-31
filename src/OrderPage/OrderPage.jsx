@@ -64,7 +64,7 @@ const columns = [
     align: 'center',
     special: value => {
       let statusColor;
-      //pending, processing, delievered
+      //TODO pending, delivered --> bug: processing
       value === "Pending" ? statusColor = '#d9b128' : statusColor = '#27b95a'
       return (<Fab disabled size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor, color: 'white', width: '110px'}}>
         {value}
@@ -97,7 +97,7 @@ class OrderPage extends React.Component {
     getOrders(){
       dataService.getOrders()
         .then(data => {
-          this.setState(() => ({ orderList:data}))
+          this.setState(() => ({ orderList:data.docs}))
         })
         .catch(err=>{
           if(err===401){
@@ -164,6 +164,7 @@ class OrderPage extends React.Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
+                    {/* {orderList.map((order,index) => { */}
                     {orderList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order,index) => {
                       return (
                         <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}

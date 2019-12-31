@@ -28,23 +28,24 @@ function getUsers() {
 }
 
 function getBankSlip() {
-  function createData(transactionId, transactionDate, UserId, statusId) {
-    return { transactionId, transactionDate, UserId, statusId};
-  }
+  return get(process.env.REACT_APP_GET_ADMINS_SLIP_DOMAIN)
+  // function createData(transactionId, transactionDate, UserId, statusId) {
+  //   return { transactionId, transactionDate, UserId, statusId};
+  // }
 
-  return [
-    createData('00001', 'User A', '50 บาท', 'Pending'),
-    createData('00002', 'User B', '150 บาท', 'Reject'),
-    createData('00003', 'User B', '20 บาท', 'Complete'),
-    createData('00004', 'User B', '50 บาท', 'Pending'),
-    createData('00005', 'User C', '50 บาท', 'Complete'),
-    createData('00006', 'User C', '50 บาท', 'Reject'),
-    createData('00007', 'User A', '50 บาท', 'Pending'),
-    createData('00008', 'User A', '50 บาท', 'Complete'),
-    createData('00009', 'User C', '50 บาท', 'Pending'),
-    createData('00010', 'User A', '50 บาท', 'Reject'),
-    createData('00011', 'User A', '50 บาท', 'Pending'),
-  ];
+  // return [
+  //   createData('00001', 'User A', '50 บาท', 'Pending'),
+  //   createData('00002', 'User B', '150 บาท', 'Reject'),
+  //   createData('00003', 'User B', '20 บาท', 'Complete'),
+  //   createData('00004', 'User B', '50 บาท', 'Pending'),
+  //   createData('00005', 'User C', '50 บาท', 'Complete'),
+  //   createData('00006', 'User C', '50 บาท', 'Reject'),
+  //   createData('00007', 'User A', '50 บาท', 'Pending'),
+  //   createData('00008', 'User A', '50 บาท', 'Complete'),
+  //   createData('00009', 'User C', '50 บาท', 'Pending'),
+  //   createData('00010', 'User A', '50 บาท', 'Reject'),
+  //   createData('00011', 'User A', '50 บาท', 'Pending'),
+  // ];
 }
 
 function getUser(userId) {
@@ -212,17 +213,21 @@ function getListItems(historyId) {
   ]
 }
 
-function getProducts(){
-  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN)
+function getProducts(limit, page) {
+  const query = queryLimitPage(limit, page)
+
+  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN + query)
 }
 
+function queryLimitPage (limit, page) {
+  limit = limit || 10
+  page = page || 1
+
+  return `?limit=${limit}&page=${page}`
+}
 
 function getProduct(productID){
-  //TODO change api
-  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN)
-        .then(data=>{
-          return data.docs.filter(x=> x._id === productID)[0]
-        })
+  return get(process.env.REACT_APP_GET_PRODUCT_ID_DOMAIN + `/${productID}`)
 }
 
 
@@ -253,10 +258,12 @@ function get(url){
       }
   };
 
+  console.log('get url', url)
+
   return fetch(url, requestOptions)
         .then(handleResponse)
         .then(data=>{
-          console.log('data product', data)
+          console.log('get data', data)
           return JSON.parse(data)
         })
 }
@@ -269,6 +276,9 @@ function handleResponse(response) {
                 // auto logout if 401 response returned from api
                 userService.logout();
             }
+
+            console.log('response.status', response.status)
+
             return Promise.reject(response.status);
         }
 
