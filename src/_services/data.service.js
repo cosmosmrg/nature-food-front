@@ -214,9 +214,17 @@ function getListItems(historyId) {
 }
 
 function getProducts(limit, page) {
+  return getLimitPage(process.env.REACT_APP_GET_PRODUCTS_DOMAIN, limit, page)
+}
+
+function getWaitingApproveProducts(limit, page) {
+  return getLimitPage(process.env.REACT_APP_GET_WAITING_APPROVE_PRODUCTS_DOMAIN, limit, page)
+}
+
+function getLimitPage(url, limit, page) {
   const query = queryLimitPage(limit, page)
 
-  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN + query)
+  return get(url + query)
 }
 
 function queryLimitPage (limit, page) {
@@ -238,6 +246,7 @@ export const dataService = {
     getStatusData,
     getProduct,
     getProducts,
+    getWaitingApproveProducts,
     getOrders,
     getUsers,
     getUser,

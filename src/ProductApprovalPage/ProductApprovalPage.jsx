@@ -63,9 +63,10 @@ class ProductApprovalPage extends React.Component {
       this.state = {
           page: 0,
           rowsPerPage:10,
+          dataCount: 0,
           data:[]
       };
-      this.getProducts = this.getProducts.bind(this);
+      this.getWaitingApproveProducts = this.getWaitingApproveProducts.bind(this);
       this.handleChangePage = this.handleChangePage.bind(this);
       this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
 
@@ -114,12 +115,22 @@ class ProductApprovalPage extends React.Component {
     }
 
     componentDidMount(){
-      // this.getProducts()
+      this.getWaitingApproveProducts()
     }
 
-    getProducts(){
-      this.setState(() => ({ data:dataService.getProducts()}))
+    getWaitingApproveProducts(limit, page){
+      dataService.getWaitingApproveProducts(limit, page)
+        .then(data => {
+          console.log('get data', data)
+          this.setState(() => ({ data:data.docs, dataCount:data.total}))
+        })
+        .catch(err=>{
+          if(err===401){
+            this.props.history.push('/login')
+          }
+        })
     }
+
 
     handleChangePage(event,newPage){
       this.setState({page: newPage})

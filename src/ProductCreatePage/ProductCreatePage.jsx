@@ -243,7 +243,7 @@ class ProductCreatePage extends React.Component {
     render() {
         const { classes } = this.props;
         const { isCreate, product,isError } = this.state;
-        
+
         return (
           <Paper className={classes.root}>
               <Grid
@@ -324,7 +324,8 @@ class ProductCreatePage extends React.Component {
                         <FormLabel component="legend" style={{color:'black'}}>สถานะ</FormLabel>
                         <RadioGroup aria-label="status" name="status" value={product.status} onChange={this.handleChange}>
                           <FormControlLabel value="pending" control={<Radio />} label="pending" />
-                          <FormControlLabel value="delivered" control={<Radio />} label="delivered" />
+                          <FormControlLabel value="active" control={<Radio />} label="active" />
+                          <FormControlLabel value="inactive" control={<Radio />} label="inactive" />
                         </RadioGroup>
                       </FormControl>
                       <FormControl component="fieldset" className={classes.formControl}>
