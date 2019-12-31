@@ -97,20 +97,20 @@ class ProductPage extends React.Component {
         this.navigateProductApprovalPage= this.navigateProductApprovalPage.bind(this);
     }
     componentDidMount(){
-      this.getProducts(2,0)
+      this.getProducts(25,1)
     }
 
     getProducts(limit, page){
       dataService.getProducts(limit, page)
         .then(data => {
+          console.log('prod data', data)
           this.setState(() => ({ data:data.docs}))
         })
         .catch(err=>{
           if(err===401){
-            // this.props.history.push('/login')
+            this.props.history.push('/login')
           }
         })
-
     }
 
     handleChangePage(event,newPage){
@@ -188,7 +188,6 @@ class ProductPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {/* {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => { */}
                   {data.map((row,index) => {
                     return (
                       <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
