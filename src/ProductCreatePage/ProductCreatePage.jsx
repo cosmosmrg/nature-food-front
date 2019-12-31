@@ -63,8 +63,8 @@ class ProductCreatePage extends React.Component {
               price:"",
               image: errorimage,
               seller:"",
-              is_package:false,
-              status:"active",
+              is_package:"true",
+              status:"pending",
             },
             isError:false,
             image : errorimage
@@ -89,9 +89,14 @@ class ProductCreatePage extends React.Component {
     getProduct(id){
       dataService.getProduct(id)
         .then(data => {
+          let defaultImage = errorimage
           if (data.image) {
-            this.setState(() => ({ product:data, image: data.image}))
+            defaultImage = data.image
           }
+
+          data.is_package = data.is_package.toString()
+
+          this.setState(() => ({ product:data, image: defaultImage}))
         })
         .catch(err=>{
           if(err===401){
@@ -122,6 +127,7 @@ class ProductCreatePage extends React.Component {
 
     handleChange(event){
       const { target: { name, value } } = event;
+      console.log('{ target: { name, value } }', { target: { name, value } })
       this.setState(() => ({ product:{...this.state.product,[name]: value }}))
     }
     addDefaultSrc(ev){
@@ -237,7 +243,7 @@ class ProductCreatePage extends React.Component {
     render() {
         const { classes } = this.props;
         const { isCreate, product,isError } = this.state;
-
+        
         return (
           <Paper className={classes.root}>
               <Grid
@@ -316,14 +322,14 @@ class ProductCreatePage extends React.Component {
                       />
                       <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend" style={{color:'black'}}>สถานะ</FormLabel>
-                        <RadioGroup aria-label="status" name="status" value={product.status||"active"} onChange={this.handleChange}>
-                          <FormControlLabel value="active" control={<Radio />} label="active" />
-                          <FormControlLabel value="cancel" control={<Radio />} label="cancel" />
+                        <RadioGroup aria-label="status" name="status" value={product.status} onChange={this.handleChange}>
+                          <FormControlLabel value="pending" control={<Radio />} label="pending" />
+                          <FormControlLabel value="delivered" control={<Radio />} label="delivered" />
                         </RadioGroup>
                       </FormControl>
                       <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend" style={{color:'black'}}>แพ็คเกจ</FormLabel>
-                        <RadioGroup aria-label="status" name="status" value={product.is_package.toString()||"true"} onChange={this.handleChange}>
+                        <RadioGroup aria-label="is_package" name="is_package" value={product.is_package} onChange={this.handleChange}>
                           <FormControlLabel value="true" control={<Radio />} label="ใช่" />
                           <FormControlLabel value="false" control={<Radio />} label="ไม่ใช่" />
                         </RadioGroup>

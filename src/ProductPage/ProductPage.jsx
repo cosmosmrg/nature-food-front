@@ -70,7 +70,7 @@ const columns = [
     label: 'แพ็คเกจ',
     minWidth: 120,
     align: 'center',
-    special: value => !value?
+    special: value => value?
       <Fab size="medium"
         variant="extended"
         aria-label="delete"
@@ -104,7 +104,6 @@ class ProductPage extends React.Component {
     getProducts(limit, page){
       dataService.getProducts(limit, page)
         .then(data => {
-          console.log('prod data', data)
           this.setState(() => ({ data:data.docs, dataCount:data.total}))
         })
         .catch(err=>{
