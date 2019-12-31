@@ -87,8 +87,9 @@ class ProductPage extends React.Component {
         super(props);
         this.state = {
             page: 0,
-            rowsPerPage:10,
-            data:[]
+            rowsPerPage: 10,
+            dataCount: 0,
+            data: []
         };
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
@@ -97,14 +98,14 @@ class ProductPage extends React.Component {
         this.navigateProductApprovalPage= this.navigateProductApprovalPage.bind(this);
     }
     componentDidMount(){
-      this.getProducts(25,1)
+      this.getProducts(10,1)
     }
 
     getProducts(limit, page){
       dataService.getProducts(limit, page)
         .then(data => {
           console.log('prod data', data)
-          this.setState(() => ({ data:data.docs}))
+          this.setState(() => ({ data:data.docs, dataCount:data.total}))
         })
         .catch(err=>{
           if(err===401){
@@ -115,10 +116,13 @@ class ProductPage extends React.Component {
 
     handleChangePage(event,newPage){
       this.setState({page: newPage})
+      this.getProducts(this.state.rowsPerPage, newPage+1)
     }
 
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
+      this.getProducts(event.target.value, 1)
+
     }
     navigateProductApprovalPage(event){
       event.preventDefault()
@@ -214,7 +218,7 @@ class ProductPage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={data.length}
+              count={this.state.dataCount}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
