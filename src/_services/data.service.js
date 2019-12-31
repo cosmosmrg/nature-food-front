@@ -3,8 +3,8 @@ function getPackages() {
   return get(process.env.REACT_APP_GET_PACKAGES_DOMAIN)
 }
 
-function getOrders(){
-  return get(process.env.REACT_APP_GET_ORDERS_DOMAIN)
+function getOrders(limit, page){
+  return getLimitPage(process.env.REACT_APP_GET_ORDERS_DOMAIN, limit, page)
 }
 
 function getUsers() {

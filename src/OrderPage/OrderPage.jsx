@@ -80,7 +80,8 @@ class OrderPage extends React.Component {
             page: 0,
             rowsPerPage: 10,
             dialogState: false,
-            orderList: []
+            dataCount: 0,
+            data: []
         };
         this.userDetail = {};
         this.dialogDetailElement = React.createRef();
@@ -91,13 +92,13 @@ class OrderPage extends React.Component {
     }
 
     componentDidMount(){
-      this.getOrders()
+      this.getOrders(10,1)
     }
 
-    getOrders(){
-      dataService.getOrders()
+    getOrders(limit, page){
+      dataService.getOrders(limit, page)
         .then(data => {
-          this.setState(() => ({ orderList:data.docs}))
+          this.setState(() => ({ data:data.docs, dataCount: data.total}))
         })
         .catch(err=>{
           if(err===401){
@@ -108,10 +109,12 @@ class OrderPage extends React.Component {
 
     handleChangePage(event,newPage){
       this.setState({page: newPage})
+      this.getOrders(this.state.rowsPerPage, newPage+1)
     }
 
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
+      this.getOrders(event.target.value, 1)
     }
 
     orderDetail = (e, orderCode) => {
@@ -130,10 +133,10 @@ class OrderPage extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { page, rowsPerPage, dialogState, orderList } = this.state;
+        const { page, rowsPerPage, dialogState, data } = this.state;
         const showStatus = true;
 
-        console.log('orderList', orderList)
+        console.log('orderList', data)
         return (
           <>
             <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} orderDetail={this.packageDetail} closeDialog={this.closeDialog} dialogState={dialogState} showStatus={showStatus}/>
@@ -164,8 +167,7 @@ class OrderPage extends React.Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {/* {orderList.map((order,index) => { */}
-                    {orderList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order,index) => {
+                    {data.map((order,index) => {
                       return (
                         <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
                           tabIndex={-1} key={order.orderCode}>
@@ -191,7 +193,7 @@ class OrderPage extends React.Component {
               <TablePagination
                 rowsPerPageOptions={[10, 25, 100]}
                 component="div"
-                count={this.rows.length}
+                count={this.state.dataCount}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 backIconButtonProps={{
