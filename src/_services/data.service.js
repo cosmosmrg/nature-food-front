@@ -213,19 +213,21 @@ function getListItems(historyId) {
   ]
 }
 
-function getProducts(limit, page){
-  console.log('limit, page', limit, page)
+function getProducts(limit, page) {
+  const query = queryLimitPage(limit, page)
 
-  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN, limit, page)
+  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN + query)
 }
 
+function queryLimitPage (limit, page) {
+  limit = limit || 10
+  page = page || 1
+
+  return `?limit=${limit}&page=${page}`
+}
 
 function getProduct(productID){
-  //TODO change api
-  return get(process.env.REACT_APP_GET_PRODUCTS_DOMAIN)
-        .then(data=>{
-          return data.docs.filter(x=> x._id === productID)[0]
-        })
+  return get(process.env.REACT_APP_GET_PRODUCT_ID_DOMAIN + `/${productID}`)
 }
 
 
@@ -246,7 +248,7 @@ export const dataService = {
     getBankSlip
 };
 
-function get(url, limit, page){
+function get(url){
   const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
   const requestOptions = {
       method: 'GET',
@@ -256,13 +258,9 @@ function get(url, limit, page){
       }
   };
 
-  limit = limit || 10
-  page = page || 1
+  console.log('get url', url)
 
-  let query = ''
-  query = `?limit=${limit}&page=${page}`
-
-  return fetch(url + query, requestOptions)
+  return fetch(url, requestOptions)
         .then(handleResponse)
         .then(data=>{
           console.log('get data', data)
@@ -272,7 +270,6 @@ function get(url, limit, page){
 
 function handleResponse(response) {
     return response.text().then(text => {
-        console.log('text', text)
         const data = text;
         if (!response.ok) {
             if (response.status === 401) {
