@@ -11,6 +11,7 @@ import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import DialogActions from '@material-ui/core/DialogActions';
 import { dataService } from '../_services/data.service'
+import { createService } from '../_services/create.service'
 import TextField from '@material-ui/core/TextField';
 import errorimage from '../static/errorimage.png';
 
@@ -65,26 +66,13 @@ class BankSlipPage extends React.Component {
             detailDialog: false,
             tabState: 0,
             dataCount: 0,
-            data:[
-              {
-                _id: "5e0b400d35742b0ba1856c82",
-                email: "may-test@x.com",
-                created_time: "2019-12-31T12:33:17.389Z",
-                status: "pending",
-                __v: 0
-              }, {
-                _id: "5e0b400d35742b0ba1856c82",
-                email: "may-test@x.com",
-                created_time: "2019-12-31T12:33:17.389Z",
-                status: "pending",
-                __v: 0
-              }
-          ],
+            data:[],
             userSelected: {},
             userDetail: {},
             isError: false,
             product: {
-              amount: ''
+              amount: '',
+              picture: errorimage
             }
         };
         this.handleChangePage = this.handleChangePage.bind(this);
@@ -94,6 +82,7 @@ class BankSlipPage extends React.Component {
         this.closeDialog = this.closeDialog.bind(this);
         this.customTemplate = this.customTemplate.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onCancel = this.onCancel.bind(this);
         this.handleChangeValue = this.handleChangeValue.bind(this);
         this.columns = [
           { id: '_id', label: 'รหัสการโอน', minWidth: 100 },
@@ -118,7 +107,7 @@ class BankSlipPage extends React.Component {
     }
 
     componentDidMount(){
-      // this.getBankSlip(10,1)
+      this.getBankSlip(10,1)
     }
 
     getBankSlip(limit, page){
@@ -135,10 +124,12 @@ class BankSlipPage extends React.Component {
 
     handleChangePage(event,newPage){
       this.setState({page: newPage})
+      this.getBankSlip(this.state.rowsPerPage, newPage+1)
     }
 
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
+      this.getBankSlip(event.target.value, 1)
     }
 
     closeDialog(){
@@ -150,9 +141,41 @@ class BankSlipPage extends React.Component {
       this.setState({product: product});
     }
 
-    onSubmit(){
+    onCancel() {
+      //TODO Shoot api
+      const { product } = this.state
+      const preparedUpdateSlip = {
+        _id: product._id,
+        amount: 0,
+        status: "rejected",
+      }
+      createService.updateSlip(preparedUpdateSlip)
+      .then(res =>{
+        if (!res) return
+        if (res.status === 200) {
+          this.getBankSlip(this.state.rowsPerPage, this.state.page)
+          this.closeDialog();
+        }
+      })
+    }
+
+    onSubmit() {
       if(this.validateForm()){
-        this.closeDialog();
+        //TODO Shoot api
+        const { product } = this.state
+        const preparedUpdateSlip = {
+          _id: product._id,
+          amount: product.amount,
+          status: "approved",
+        }
+        createService.updateSlip(preparedUpdateSlip)
+        .then(res =>{
+          if (!res) return
+          if (res.status === 200) {
+            this.getBankSlip(this.state.rowsPerPage, this.state.page)
+            this.closeDialog();
+          }
+        })
       }else{
         this.setState(() => ({ isError:true}))
       }
@@ -197,8 +220,8 @@ class BankSlipPage extends React.Component {
             helperText={isError&&product.amount===""?"กรุณาระบุจำนวนเงิน":""}
           />
                <DialogActions style={{ justifyContent: 'flex-start' }}>
-            <Fab size="small" onClick={this.closeDialog} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#eb2a51', color: 'white', textTransform: 'inherit', width: '130px' }}>
-              ยกเลิก
+            <Fab size="small" onClick={this.onCancel} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#eb2a51', color: 'white', textTransform: 'inherit', width: '130px' }}>
+              ปฏิเสธ
               </Fab>
             <Fab size="small" onClick={this.onSubmit} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#0079ea', color: 'white', textTransform: 'inherit', width: '130px' }}>
               ยืนยัน
@@ -208,23 +231,21 @@ class BankSlipPage extends React.Component {
       );
     }
 
-    detail(e, userId){
+    detail(e, data){
+      const user = data.user
       if (e.defaultPrevented ) return;
-      this.setState({userDetail: dataService.getMockUserDetail('AA123')});
-      this.setState({detailDialog: true});
-      this.setState({tabState: 0});
-      this.setState({product: { amount: ''}});
-      this.setState({isError: false});
+      this.setState({userDetail: user, detailDialog: true, tabState: 0, product: { amount: '', picture: data.src, _id: data._id}, isError: false});
     }
 
     render() {
         const { classes } = this.props;
         const { page, rowsPerPage, data, detailDialog, userDetail } = this.state;
+
         return (
           <>
 
           <Paper className={classes.root}>
-          <DialogDetailComponent userDetail={userDetail} customTemplate={this.customTemplate} closeDialog={this.closeDialog} dialogState={detailDialog}/>
+          <DialogDetailComponent userDetail={userDetail} customTemplate={this.customTemplate()} closeDialog={this.closeDialog} dialogState={detailDialog}/>
               <Grid
                   container
                   direction="row"
@@ -254,7 +275,7 @@ class BankSlipPage extends React.Component {
                   {data.map((row,index) => {
                     return (
                       <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
-                      tabIndex={-1} key={row.transactionId} onClick={(e) => this.detail(e, row.userId)}>
+                      tabIndex={-1} key={row.transactionId} onClick={(e) => this.detail(e, row)}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (
@@ -277,7 +298,7 @@ class BankSlipPage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={data.length}
+              count={this.state.dataCount}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
