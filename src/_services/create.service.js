@@ -11,7 +11,6 @@ export const createService = {
 function post(url,json) {
   const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
 
-  console.log('url, json', url, json)
   const requestOptions = {
       method: 'POST',
       url,
@@ -23,7 +22,6 @@ function post(url,json) {
   };
   return axios(requestOptions)
   .then(res => {
-    console.log('res', res)
     if (res.status !== 200) {
       if (res.status === 401) {
         userService.logout();

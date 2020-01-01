@@ -145,7 +145,6 @@ class OrderPage extends React.Component {
         const { page, rowsPerPage, dialogState, data } = this.state;
         const showStatus = true;
 
-        console.log('orderList', data)
         return (
           <>
             <DialogDetailComponent userDetail={this.userDetail} ref={this.dialogDetailElement} orderDetail={this.packageDetail} closeDialog={this.closeDialog} dialogState={dialogState} showStatus={showStatus}/>

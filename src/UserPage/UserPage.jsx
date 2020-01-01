@@ -150,7 +150,6 @@ class UserPage extends React.Component {
 
     openConfirmDialog(e, userId) {
       this.setState({userSelected: dataService.getUser(userId)});
-      console.log('call get api')
       this.setState({confirmDialog: true});
       e.preventDefault();
     }
@@ -249,7 +248,6 @@ class UserPage extends React.Component {
 
     confirmDialog() {
       const { userSelected } = this.state;
-      console.log('userSelected', userSelected)
       const event = this.confirmDialogEvent;
       return (
         <Dialog
@@ -280,7 +278,6 @@ class UserPage extends React.Component {
         const { classes } = this.props;
         const { page, rowsPerPage, data, detailDialog, userDetail } = this.state;
 
-        console.log('user data', data)
         return (
           <>
 
@@ -317,7 +314,7 @@ class UserPage extends React.Component {
                   {data.map((row,index) => {
                     return (
                       <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
-                        tabIndex={-1} key={row.userId} onClick={(e) => this.detail(e, row.userId)}>
+                        tabIndex={-1} key={row._id} onClick={(e) => this.detail(e, row._id)}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (

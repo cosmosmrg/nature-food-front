@@ -260,8 +260,6 @@ class ReportPage extends React.Component {
         const { classes } = this.props;
         const { page, rowsPerPage, switchQuantityFilter,switchValueFilter, data,  dataReport} = this.state;
 
-        console.log('report data', data)
-
         return (
             <Paper className={classes.root}>
               <Grid
