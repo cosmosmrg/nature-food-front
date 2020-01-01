@@ -47,7 +47,7 @@ const columns = [
   { id: 'created_time',
     label: 'วันที่ทำรายการ',
     minWidth: 100,
-    special: value => moment(value).format("DD MMMM YYYY")
+    special: value => moment(value).format("D MMMM YYYY")
   },
   {
     id: 'user',
@@ -71,7 +71,7 @@ const columns = [
     special: value => {
       let statusColor;
       //TODO pending, delivered --> bug: processing
-      value === "Pending" ? statusColor = '#d9b128' : statusColor = '#27b95a'
+      value === "processing" ? statusColor = '#d9b128' : statusColor = '#27b95a'
       return (<Fab disabled size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor, color: 'white', width: '110px'}}>
         {value}
       </Fab>)},
@@ -136,6 +136,7 @@ class OrderPage extends React.Component {
 
     closeDialog = () => {
       this.setState({dialogState: false})
+      this.getOrders(10,1)
     }
 
     render() {

@@ -76,7 +76,7 @@ class DialogDetailComponent extends React.Component {
         if(!orderDetail) return;
         const statuses = dataService.getStatusData();
         const updateStatus = () => {
-          createService.updateOrderStatus({id:orderDetail._id,status:this.state.status})
+          createService.updateOrderStatus({_id:orderDetail._id,status:this.state.status})
             .then(order => {
               closeDialog();
             })
@@ -136,7 +136,13 @@ class DialogDetailComponent extends React.Component {
               <DialogContent style={{margin: '0 10px'}}>
                 {
                   error?
-                  <Typography style={{marginRight: '30px',color:'red'}}>{error}</Typography>
+                  <Fab
+                    size="small"
+                    variant="extended"
+                    disabled
+                    style={{marginBottom: '20px', width: '100%',backgroundColor:'#ffcccc', color:'red'}}>
+                    Error: {error}
+                  </Fab>
                   :
                   null
                 }
