@@ -33,7 +33,7 @@ function getBankSlip() {
 }
 
 function getUser(userId) {
-  return this.getUsers().find(user => user.userId === userId);
+  return get(process.env.REACT_APP_GET_USER_DOMAIN + `/${userId}`)
 }
 
 
@@ -55,17 +55,17 @@ function getPackage(orderNo) {
 }
 
 function getUserDetail(orderNo) {
-    function createData(orderNo, name, place, email, phoneNumber) {
-        return { orderNo, name, place, email, phoneNumber };
-    }
+    // function createData(orderNo, name, place, email, phoneNumber) {
+    //     return { orderNo, name, place, email, phoneNumber };
+    // }
 
-    const data = [
-        createData('AA123', 'คุณ สวดีดัด ทดสอบ', '123 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test@test.com', '081-111-1111'),
-        createData('AA122', 'คุณ ชาวโลก ทดสอบ', '122 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test2@test.com', '081-111-2222'),
-        createData('AA121', 'คุณ ทดสอบ3 ทดสอบ', '121 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test3@test.com', '081-111-333')
+    // const data = [
+    //     createData('AA123', 'คุณ สวดีดัด ทดสอบ', '123 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test@test.com', '081-111-1111'),
+    //     createData('AA122', 'คุณ ชาวโลก ทดสอบ', '122 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test2@test.com', '081-111-2222'),
+    //     createData('AA121', 'คุณ ทดสอบ3 ทดสอบ', '121 เมือง ปทุมวัน กรุงเทพ กาญจนาภิเษก 10000', 'test3@test.com', '081-111-333')
 
-    ];
-    return data.find(x=> x.orderNo === orderNo);
+    // ];
+    // return data.find(x=> x.orderNo === orderNo);
 }
 
 
@@ -226,7 +226,6 @@ function queryLimitPage (limit, page) {
 function getProduct(productID){
   return get(process.env.REACT_APP_GET_PRODUCT_ID_DOMAIN + `/${productID}`)
 }
-
 
 export const dataService = {
     getPackages,

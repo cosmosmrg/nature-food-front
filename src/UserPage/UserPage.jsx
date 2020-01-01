@@ -150,6 +150,7 @@ class UserPage extends React.Component {
 
     openConfirmDialog(e, userId) {
       this.setState({userSelected: dataService.getUser(userId)});
+      console.log('call get api')
       this.setState({confirmDialog: true});
       e.preventDefault();
     }
@@ -248,6 +249,7 @@ class UserPage extends React.Component {
 
     confirmDialog() {
       const { userSelected } = this.state;
+      console.log('userSelected', userSelected)
       const event = this.confirmDialogEvent;
       return (
         <Dialog
