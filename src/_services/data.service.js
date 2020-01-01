@@ -63,64 +63,20 @@ function getById(url, id) {
 
 
 function getReport(startDate, endDate) {
-  // if (!(startDate && endDate)) return
+  let query
 
-  // const url = process.env.REACT_APP_GET_ADMIN_REPORT_DOMAIN + '?start=2019-11-01T07:43:56.985Z&stop=2019-12-01T07:43:56.985Z'
-
-  // return get(url)
-  function createData(rank, product, quantity, value, date) {
-    return { rank, product, quantity, value, date };
+  if (!(startDate && endDate)) {
+    query = ""
+  } else {
+    query = `?start=${startDate}&stop=${endDate}`
   }
 
-  return [
-    createData('1', 'ข้าวหอม 1 กิโลกรัม', 50, 1500, new Date(2019, 5, 12)),
-    createData('2', 'กล้วย 5 กิโลกรัม', 250, 150, new Date(2019, 2, 12)),
-    createData('3', 'ควย 5 กิโลกรัม', 250, 5000, new Date(2019, 2, 12)),
-    createData('4', 'อิอิ 250 ml', 25, 800, new Date(2019, 3, 12)),
-    createData('5', 'งิงิ 1 กิโลกรัม', 50, 1500, new Date(2019, 4, 12)),
-    createData('6', 'หุหุ 5 กิโลกรัม', 250, 300, new Date(2019, 5, 12)),
-    createData('7', '5 กิโลกรัม', 250, 5000, new Date(2019, 5, 12)),
-    createData('8', '250 ml', 25, 800, new Date(2019, 10, 12)),
-    createData('9', '1 กิโลกรัม', 50, 1500, new Date(2019, 11, 12)),
-    createData('10', '5 กิโลกรัม', 250, 300, new Date(2019, 5, 12)),
-    createData('11', '5 กิโลกรัม', 250, 5000, new Date(2019, 5, 12)),
-    createData('12', '250 ml', 25, 800, new Date(2020, 3, 2)),
-  ];
+  return get(process.env.REACT_APP_GET_ADMIN_REPORT_DOMAIN + query)
 }
 
 function getReportChart(date, data) {
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-  ];
-
-  data = getReport();
-
-  function getMonths(){
-    const months = [];
-
-    if(date.from.year !== date.to.year) {
-        for(let i = date.from.month; i <= 12; ++i){
-        months.push({name: monthNames[i - 1] + '/' + date.from.year, value: i, year: date.from.year});
-      }
-      for(let i = 1; i <= date.to.month; ++i){
-        months.push({name: monthNames[i - 1] + '/' + date.to.year, value: i, year: date.to.year});
-      }
-    }else{
-      for(let i = date.from.month; i <= date.to.month; ++i){
-        months.push({name: monthNames[i - 1], value: i, year: date.to.year});
-      }
-    }
-    return months;
-  }
-  const months = getMonths();
-  function sum(month, year){
-    let total = 0;
-    data.filter(x=> x.date.getMonth() === month && x.date.getFullYear() === year).forEach(x=> total += x.value);
-    return total;
-  }
-
   return {
-    labels: getMonths().map(x => x.name),
+    labels: date,
     options: {
         scales: {
             yAxes: [{
@@ -162,7 +118,7 @@ function getReportChart(date, data) {
         borderWidth: 0,
         hoverBackgroundColor: 'rgba(255,99,132,0.4)',
         hoverBorderColor: 'rgba(255,99,132,1)',
-        data: getMonths().map(x => sum(x.value, x.year))
+        data: data
       }
     ]
   };

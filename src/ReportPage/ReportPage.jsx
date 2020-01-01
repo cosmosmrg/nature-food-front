@@ -8,7 +8,6 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -17,6 +16,7 @@ import { withStyles } from '@material-ui/styles';
 import {Bar} from 'react-chartjs-2';
 import _ from 'lodash'
 import { dataService } from '../_services/data.service';
+import moment from 'moment'
 
 
 export const barOptions = {
@@ -159,8 +159,6 @@ class ReportPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            page: 0,
-            rowsPerPage:10,
             data:[],
             switchQuantityFilter: 'asc',
             switchValueFilter: 'asc',
@@ -182,17 +180,16 @@ class ReportPage extends React.Component {
         this.dataChange = this.dataChange.bind(this);
 
         this.columns = [
-            { id: 'rank', label: 'อันดับ', minWidth: 50 },
-            { id: 'product', label: 'สินค้า', minWidth: 200  },
+            { id: 'name', label: 'สินค้า', minWidth: 200  },
             {
-              id: 'quantity',
+              id: 'amount',
               label: 'จำนวน',
               minWidth: 120,
               align: 'left',
               quantityFilter: true
             },
             {
-                id: 'value',
+                id: 'totalprice',
                 label: 'มูลค่า',
                 minWidth: 120,
                 align: 'left',
@@ -203,27 +200,28 @@ class ReportPage extends React.Component {
     }
 
     componentDidMount(){
-        this.getReports()
+        this.getReports(moment(), moment())
     }
 
-    getReports(){
-        const date = {
-          from: {
-            month: now.getMonth() + 1,
-            year: 2019
-          },
-          to: {
-            month: now.getMonth() + 1,
-            year: 2019
-          }
+    getReports(startDate, stopDate){
+      dataService.getReport(startDate, stopDate)
+      .then(data => {
+        console.log('report data', data)
+        this.setState(() => ({ data:data.top_sales, dataReport: dataService.getReportChart(data.labels, data.data)}))
+      })
+      .catch(err=>{
+        if(err===401){
+          this.props.history.push('/login')
         }
-        const data = dataService.getReport();
-        this.setState({data: data});
-        this.setState({dataReport: dataService.getReportChart(date, data)});
+      })
     }
 
     apply(){
-      this.setState({dataReport: dataService.getReportChart(this.datePicker, this.state.data)});
+      const startDate = moment(`${this.datePicker.from.month}-${this.datePicker.from.year}`, 'MM-YYYY')
+      const endDate = moment(`${this.datePicker.to.month}-${this.datePicker.to.year}`, 'MM-YYYY')
+
+      console.log(startDate, endDate)
+      this.getReports(startDate, endDate)
     }
 
     dataChange(date){
@@ -231,9 +229,10 @@ class ReportPage extends React.Component {
     }
 
     filterReport = (switchQuantityFilter, switchValueFilter) => {
-        const sort = _.orderBy(this.state.data, ['quantity', 'value'], [switchQuantityFilter, switchValueFilter])
+        const sort = _.orderBy(this.state.data, ['amount', 'totalprice'], [switchQuantityFilter, switchValueFilter])
         this.setState({data: sort, switchQuantityFilter, switchValueFilter })
     }
+
     sum(data){
       function formatNumber(num) {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
@@ -258,7 +257,7 @@ class ReportPage extends React.Component {
     }
     render() {
         const { classes } = this.props;
-        const { page, rowsPerPage, switchQuantityFilter,switchValueFilter, data,  dataReport} = this.state;
+        const { switchQuantityFilter,switchValueFilter, data,  dataReport} = this.state;
 
         return (
             <Paper className={classes.root}>
@@ -318,6 +317,13 @@ class ReportPage extends React.Component {
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell
+                      style={{ minWidth: 50, fontWeight: 'bold' }}
+                    >
+                      <div style={{display: 'flex'}}>
+                          อันดับ
+                      </div>
+                    </TableCell>
                     {this.columns.map(column => (
                       <TableCell
                         key={column.id}
@@ -358,9 +364,12 @@ class ReportPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {data.map((row, index) => {
                     return (
-                      <TableRow style={{height: 83}} hover role="checkbox" tabIndex={-1} key={row.productID}>
+                      <TableRow style={index%2===0 ? {backgroundColor:'#f2f2f2',height: 83} : {height: 83}} hover role="checkbox" tabIndex={-1} key={row.productID}>
+                        <TableCell>
+                          {index + 1}
+                        </TableCell>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (
@@ -380,21 +389,6 @@ class ReportPage extends React.Component {
                 </TableBody>
               </Table>
             </div>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                'aria-label': 'previous page',
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'next page',
-              }}
-              onChangePage={this.handleChangePage}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
-            />
           </Paper>
         );
     }
