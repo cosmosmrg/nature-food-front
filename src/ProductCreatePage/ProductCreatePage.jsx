@@ -127,7 +127,6 @@ class ProductCreatePage extends React.Component {
 
     handleChange(event){
       const { target: { name, value } } = event;
-      console.log('{ target: { name, value } }', { target: { name, value } })
       this.setState(() => ({ product:{...this.state.product,[name]: value }}))
     }
     addDefaultSrc(ev){

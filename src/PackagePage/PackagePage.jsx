@@ -111,7 +111,7 @@ class PackagePage extends React.Component {
     statusDetail(e, orderNo){
       this.packageDetail = dataService.getPackage(orderNo);
       this.dialogDetailElement.current.changeStatus(this.packageDetail.status);
-      Object.assign(this.userDetail, dataService.getUserDetail(orderNo));
+      Object.assign(this.userDetail, dataService.getMockUserDetail(orderNo));
       this.openDialog(true);
     }
 
