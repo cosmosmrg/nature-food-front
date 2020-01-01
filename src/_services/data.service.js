@@ -7,28 +7,12 @@ function getOrders(limit, page){
   return getLimitPage(process.env.REACT_APP_GET_ORDERS_DOMAIN, limit, page)
 }
 
-function getUsers() {
-  function createData(userId, email, name, balance, amount) {
-    return { userId, email, name, balance, amount};
-  }
-
-  return [
-    createData('00001', 'user1@hotmail.com', 'User A', '50 บาท', 1),
-    createData('00002', 'user2@hotmail.com', 'User B', '150 บาท', 1),
-    createData('00003', 'user3@hotmail.com', 'User B', '20 บาท', 1),
-    createData('00004', 'user4@hotmail.com', 'User B', '50 บาท', 1),
-    createData('00005', 'user5@hotmail.com', 'User C', '50 บาท', 1),
-    createData('00006', 'user6@hotmail.com', 'User C', '50 บาท', 1),
-    createData('00007', 'user7@hotmail.com', 'User A', '50 บาท', 1),
-    createData('00008', 'user8@hotmail.com', 'User A', '50 บาท', 1),
-    createData('00009', 'user9@hotmail.com', 'User C', '50 บาท', 1),
-    createData('00010', 'user10@hotmail.com', 'User A', '50 บาท', 1),
-    createData('00011', 'user11@hotmail.com', 'User A', '50 บาท', 1),
-  ];
+function getUsers(limit, page) {
+  return getLimitPage(process.env.REACT_APP_GET_ADMIN_USER_DOMAIN, limit, page)
 }
 
 function getBankSlip() {
-  return get(process.env.REACT_APP_GET_ADMINS_SLIP_DOMAIN)
+  return get(process.env.REACT_APP_GET_ADMIN_SLIP_DOMAIN)
   // function createData(transactionId, transactionDate, UserId, statusId) {
   //   return { transactionId, transactionDate, UserId, statusId};
   // }
@@ -86,6 +70,11 @@ function getUserDetail(orderNo) {
 
 
 function getReport(startDate, endDate) {
+  // if (!(startDate && endDate)) return
+
+  // const url = process.env.REACT_APP_GET_ADMIN_REPORT_DOMAIN + '?start=2019-11-01T07:43:56.985Z&stop=2019-12-01T07:43:56.985Z'
+
+  // return get(url)
   function createData(rank, product, quantity, value, date) {
     return { rank, product, quantity, value, date };
   }

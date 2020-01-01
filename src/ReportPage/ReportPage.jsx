@@ -113,7 +113,6 @@ class MonthPicker extends React.Component {
     }
 
     render() {
-
         const pickerLang = {
             months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             from: 'From', to: 'To',
@@ -204,7 +203,7 @@ class ReportPage extends React.Component {
     }
 
     componentDidMount(){
-        // this.getReports()
+        this.getReports()
     }
 
     getReports(){
@@ -260,6 +259,9 @@ class ReportPage extends React.Component {
     render() {
         const { classes } = this.props;
         const { page, rowsPerPage, switchQuantityFilter,switchValueFilter, data,  dataReport} = this.state;
+
+        console.log('report data', data)
+
         return (
             <Paper className={classes.root}>
               <Grid

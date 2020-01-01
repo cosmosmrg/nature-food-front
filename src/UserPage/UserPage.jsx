@@ -69,6 +69,7 @@ class UserPage extends React.Component {
             confirmDialog: false,
             detailDialog: false,
             tabState: 0,
+            dataCount: 0,
             data:[],
             userSelected: {},
             userDetail: {}
@@ -99,7 +100,7 @@ class UserPage extends React.Component {
             align: 'left',
           },
           {
-            id: 'userId',
+            id: '_id',
             label: '',
             minWidth: 120,
             align: 'center',
@@ -112,19 +113,29 @@ class UserPage extends React.Component {
     }
 
     componentDidMount(){
-      // this.getUsers()
+      this.getUsers(10,1)
     }
 
-    getUsers(){
-      this.setState(() => ({ data: dataService.getUsers()}));
+    getUsers(limit, page){
+      dataService.getUsers(limit, page)
+        .then(data => {
+          this.setState(() => ({ data:data.docs, dataCount:data.total}))
+        })
+        .catch(err=>{
+          if(err===401){
+            this.props.history.push('/login')
+          }
+        })
     }
 
     handleChangePage(event,newPage){
       this.setState({page: newPage})
+      this.getUsers(this.state.rowsPerPage, newPage+1)
     }
 
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
+      this.getUsers(event.target.value, 1)
     }
 
     confirmDialogEvent = {
@@ -266,6 +277,8 @@ class UserPage extends React.Component {
     render() {
         const { classes } = this.props;
         const { page, rowsPerPage, data, detailDialog, userDetail } = this.state;
+
+        console.log('user data', data)
         return (
           <>
 
@@ -299,9 +312,10 @@ class UserPage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  {data.map((row,index) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.userId} onClick={(e) => this.detail(e, row.userId)}>
+                      <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
+                        tabIndex={-1} key={row.userId} onClick={(e) => this.detail(e, row.userId)}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (
@@ -324,7 +338,7 @@ class UserPage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={data.length}
+              count={this.state.dataCount}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
