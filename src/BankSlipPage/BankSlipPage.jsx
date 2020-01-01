@@ -14,6 +14,7 @@ import { dataService } from '../_services/data.service'
 import { createService } from '../_services/create.service'
 import TextField from '@material-ui/core/TextField';
 import errorimage from '../static/errorimage.png';
+import moment from 'moment'
 
 import { withStyles } from '@material-ui/styles';
 import DialogDetailComponent from '../DialogDetailComponent'
@@ -52,9 +53,9 @@ export const styles = theme => ({
 });
 
 const statusColor = {
-  Pending: '#d9b028',
-  Reject: '#eb2a51',
-  Complete: '#5e9c5a'
+  pending: '#d9b028',
+  rejected: '#eb2a51',
+  approved: '#5e9c5a'
 }
 
 class BankSlipPage extends React.Component {
@@ -86,12 +87,24 @@ class BankSlipPage extends React.Component {
         this.handleChangeValue = this.handleChangeValue.bind(this);
         this.columns = [
           { id: '_id', label: 'รหัสการโอน', minWidth: 100 },
-          { id: 'created_time', label: 'วันที่ทำรายการ', minWidth: 100 },
           {
-            id: 'email',
+            id: 'created_time',
+            label: 'วันที่ทำรายการ',
+            minWidth: 100,
+            special: value =>
+              <div>
+                {moment(value).format("Do MMM YYYY")}
+              </div>
+          },
+          {
+            id: 'user',
             label: 'ชื่อผู้โอน',
             minWidth: 200,
             align: 'left',
+            special: value =>
+            <div>
+              {value.name}
+            </div>
           },
           {
             id: 'status',
@@ -101,7 +114,7 @@ class BankSlipPage extends React.Component {
             special: value =>
             <Fab size="small" variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: statusColor[value], color: 'white', textTransform: 'inherit', width: '100px'}} disabled>
               {value}
-          </Fab>
+            </Fab>
           },
         ];
     }
