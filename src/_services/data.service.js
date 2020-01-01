@@ -37,8 +37,7 @@ function getPackage(orderNo) {
     return { products: data.filter(x=> x.orderNo === orderNo), time: 10 ,transportWeek : 1 ,startDate: '10 June 2019' ,endDate: '10 June 2019', status: '4' };
 }
 
-function getUserDetail(orderNo) {
-  // return getById(process.env.REACT_APP_GET_USER_DOMAIN, userId)
+function getMockUserDetail(orderNo) {
     function createData(orderNo, name, place, email, phoneNumber) {
         return { orderNo, name, place, email, phoneNumber };
     }
@@ -50,6 +49,10 @@ function getUserDetail(orderNo) {
 
     ];
     return data.find(x=> x.orderNo === orderNo);
+}
+
+function getUserDetail(userId) {
+  return getById(process.env.REACT_APP_GET_USER_DOMAIN, userId)
 }
 
 function getById(url, id) {
@@ -229,7 +232,8 @@ export const dataService = {
     getListItems,
     getReport,
     getReportChart,
-    getBankSlip
+    getBankSlip,
+    getMockUserDetail
 };
 
 function get(url){

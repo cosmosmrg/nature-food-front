@@ -165,9 +165,7 @@ class BankSlipPage extends React.Component {
 
     customTemplate() {
       const { classes } = this.props;
-      const { product, isError, BankSlipList } = this.state;
-
-      console.log('BankSlipList', BankSlipList)
+      const { product, isError } = this.state;
 
       return (
           <Grid
@@ -212,7 +210,7 @@ class BankSlipPage extends React.Component {
 
     detail(e, userId){
       if (e.defaultPrevented ) return;
-      this.setState({userDetail: dataService.getUserDetail('AA123')});
+      this.setState({userDetail: dataService.getMockUserDetail('AA123')});
       this.setState({detailDialog: true});
       this.setState({tabState: 0});
       this.setState({product: { amount: ''}});

@@ -165,7 +165,7 @@ class DialogDetailComponent extends React.Component {
                   <Typography style={{marginRight: '30px'}}>เบอร์</Typography>
                   <Typography>{userDetail.tel}</Typography>
                 </div>
-                {customTemplate && customTemplate()}
+                {customTemplate}
                 {orderDetail && this.renderOrderDetail(orderDetail, showOrderShipping)}
                 {showStatus && this.renderStatus(orderDetail, closeDialog)}
               </DialogContent>
