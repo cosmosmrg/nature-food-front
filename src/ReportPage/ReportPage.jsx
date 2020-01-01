@@ -366,7 +366,7 @@ class ReportPage extends React.Component {
                 <TableBody>
                   {data.map((row, index) => {
                     return (
-                      <TableRow style={{height: 83}} hover role="checkbox" tabIndex={-1} key={row.productID}>
+                      <TableRow style={index%2===0 ? {backgroundColor:'#f2f2f2',height: 83} : {height: 83}} hover role="checkbox" tabIndex={-1} key={row.productID}>
                         <TableCell>
                           {index + 1}
                         </TableCell>
