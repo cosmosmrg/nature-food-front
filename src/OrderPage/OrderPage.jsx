@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 
 import { withStyles } from '@material-ui/styles';
 import { dataService } from '../_services/data.service'
+import moment from 'moment'
 
 //Dialog
 import DialogDetailComponent from '../DialogDetailComponent'
@@ -43,12 +44,17 @@ const styles = theme => ({
 
 const columns = [
   { id: '_id', label: 'รหัสคำสั่งซื้อ', minWidth: 200 },
-  { id: 'created_time', label: 'วันที่ทำรายการ', minWidth: 100 },
+  { id: 'created_time',
+    label: 'วันที่ทำรายการ',
+    minWidth: 100,
+    special: value => moment(value).format("DD MMMM YYYY")
+  },
   {
     id: 'user',
     label: 'ชื่อผู้ซื้อ',
     minWidth: 120,
     align: 'left',
+    special: value => value.name
   },
   {
     id: 'total_price',
@@ -81,16 +87,7 @@ class OrderPage extends React.Component {
             rowsPerPage: 10,
             dialogState: false,
             dataCount: 0,
-            data: [
-              {
-                _id: "5e0b33f135742b0ba1856c81",
-                user: "5e039819b822791dabaadf7f",
-                status: "pending",
-                created_time: "2019-12-31T11:41:37.810Z",
-                items: [],
-                total_price: 0
-              }
-            ]
+            data: []
         };
         this.userDetail = {};
         this.dialogDetailElement = React.createRef();
@@ -101,7 +98,7 @@ class OrderPage extends React.Component {
     }
 
     componentDidMount(){
-      // this.getOrders(10,1)
+      this.getOrders(10,1)
     }
 
     getOrders(limit, page){
@@ -127,9 +124,10 @@ class OrderPage extends React.Component {
     }
 
     orderDetail = (e, orderCode) => {
-      this.packageDetail = dataService.getPackage(orderCode);
+      this.packageDetail = this.state.data.filter(data=>data._id===orderCode)[0];
+      console.log("packageDetail",this.packageDetail);
       this.dialogDetailElement.current.changeStatus(this.packageDetail.status);
-      Object.assign(this.userDetail, dataService.getUserDetail(orderCode));
+      Object.assign(this.userDetail, this.packageDetail.user);
       this.openDialog();
     }
     openDialog = () => {
@@ -178,11 +176,11 @@ class OrderPage extends React.Component {
                     {data.map((order,index) => {
                       return (
                         <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
-                          tabIndex={-1} key={order.orderCode}>
+                          tabIndex={-1} key={order._id}>
                           {columns.map(column => {
                             const value = order[column.id];
                             return (
-                              <TableCell key={column.id} align={column.align} onClick={(e) => {this.orderDetail(e, order.orderCode)}}>
+                              <TableCell key={column.id} align={column.align} onClick={(e) => {this.orderDetail(e, order._id)}}>
                                 {column.format && typeof value === 'number' ? column.format(value)
                                   :
                                   column.special?
