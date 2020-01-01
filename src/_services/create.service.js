@@ -5,7 +5,8 @@ export const createService = {
     createProduct,
     editProduct,
     uploadImageProduct,
-    approvalProduct
+    approvalProduct,
+    updateOrderStatus
 };
 
 function post(url,json) {
@@ -22,20 +23,13 @@ function post(url,json) {
   };
   return axios(requestOptions)
   .then(res => {
-    if (res.status !== 200) {
-      if (res.status === 401) {
-        userService.logout();
-      }
-
-      console.log('res.status', res.status)
-
-      return false
-    }
-
     return res
   })
   .catch(error => {
-    console.error(error)
+    if (error.response.status === 401) {
+      userService.logout();
+    }
+    throw new Error(error.response.data)
   })
 }
 
@@ -54,4 +48,8 @@ function approvalProduct(productId){
 
 function uploadImageProduct(image){
   return post(process.env.REACT_APP_UPLOAD_IMAGE_PRODUCT_DOMAIN, image)
+}
+
+function updateOrderStatus(obj){
+  return post(process.env.REACT_APP_UPDATE_ORDER_STATUS_DOMAIN, obj)
 }
