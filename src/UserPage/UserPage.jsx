@@ -208,7 +208,7 @@ class UserPage extends React.Component {
                     <TableBody>
                       {history && history.map((row, index) => (
                         <TableRow role="checkbox" tabIndex={-1} key={index} >
-                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{moment(row.date).format("Do MMM YYYY")}</TableCell>
+                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{moment(row.date).format("D MMMM YYYY")}</TableCell>
                           <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.amount}</TableCell>
                         </TableRow>
                       ))}
