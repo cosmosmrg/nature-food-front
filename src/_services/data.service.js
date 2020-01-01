@@ -11,8 +11,8 @@ function getUsers(limit, page) {
   return getLimitPage(process.env.REACT_APP_GET_ADMIN_USER_DOMAIN, limit, page)
 }
 
-function getBankSlip() {
-  return get(process.env.REACT_APP_GET_ADMIN_SLIP_DOMAIN)
+function getBankSlip(limit, page) {
+  return getLimitPage(process.env.REACT_APP_GET_ADMIN_SLIP_DOMAIN, limit, page)
 }
 
 function getUser(userId) {

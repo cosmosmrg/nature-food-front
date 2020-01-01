@@ -121,7 +121,6 @@ class ProductPage extends React.Component {
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
       this.getProducts(event.target.value, 1)
-
     }
     navigateProductApprovalPage(event){
       event.preventDefault()
