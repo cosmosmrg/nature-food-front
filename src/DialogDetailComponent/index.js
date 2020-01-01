@@ -12,6 +12,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import { dataService } from '../_services/data.service'
 import { createService } from '../_services/create.service'
 import Fab from '@material-ui/core/Fab';
+import moment from 'moment'
 
 const DialogContent = withStyles(theme => ({
   root: {
@@ -31,16 +32,19 @@ class DialogDetailComponent extends React.Component {
         return (<div style={{ padding: '10px 0', borderBottom: '1px solid white' }}>
 
           <Typography gutterBottom>
-            ระยะเวลา: {orderDetail.time} เดือน
+            ระยะเวลา: {orderDetail.duration} เดือน
           </Typography>
           <Typography gutterBottom>
-            สัปดาห์ในการจัดส่ง {orderDetail.transportWeek}
+            สัปดาห์ในการจัดส่ง {orderDetail.deliverweek}
           </Typography>
           <Typography gutterBottom>
-            วันที่เริ่มต้น: {orderDetail.startDate}
+            ครั้งที่ส่ง: {orderDetail.times}
           </Typography>
           <Typography gutterBottom>
-            วันที่สิ้นสุด: {orderDetail.endDate}
+            วันที่ควรเริ่มส่ง: {moment(orderDetail.expected_deliver_date).utc(7).format('D MMMM YYYY')}
+          </Typography>
+          <Typography gutterBottom>
+            ร้านค้า: {orderDetail.seller.shop_name}
           </Typography>
         </div>);
       }
@@ -54,8 +58,8 @@ class DialogDetailComponent extends React.Component {
               </Typography>
               {showOrderShipping && this.renderOrderShipping(orderDetail)}
               <div style={{ paddingBottom: '10px', paddingTop: '10px', borderBottom: '1px solid white' }}>
-                {orderDetail.items.map(row => {
-                  return (<Typography gutterBottom key={row._id}>
+                {orderDetail.items.map((row,index) => {
+                  return (<Typography gutterBottom key={index}>
                     {row.name} X {row.amount}
                   </Typography>)
                 })}
