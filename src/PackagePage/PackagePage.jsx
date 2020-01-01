@@ -9,7 +9,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
-
+import moment from 'moment'
 
 
 import { withStyles } from '@material-ui/styles';
@@ -44,9 +44,8 @@ export const styles = theme => ({
 //TODO package (subscription)-> pending, delivered, --> bug: completed, processing
 
 const statusColor = {
-  Pending: '#d9b028',
-  Ongoing: '#2775b9',
-  Complete: '#5e9c5a'
+  processing: '#d9b028',
+  delivered: '#5e9c5a'
 }
 
 class PackagePage extends React.Component {
@@ -56,6 +55,7 @@ class PackagePage extends React.Component {
             page: 0,
             rowsPerPage:10,
             dialogState: false,
+            dataCount:0,
             packageList: []
         };
         this.dialogDetailElement = React.createRef();
@@ -65,17 +65,35 @@ class PackagePage extends React.Component {
         this.statusDetail = this.statusDetail.bind(this);
         this.getPackages = this.getPackages.bind(this);
         this.columns = [
-          { id: 'orderNo', label: 'รหัสคำสั่งซื้อ', minWidth: 100 },
-          { id: 'transDate', label: 'วันที่ทำรายการ', minWidth: 100 },
+          { id: 'ref_id', label: 'รหัสคำสั่งซื้อ', minWidth: 100 },
+          { id: 'created_time',
+            label: 'วันที่ทำรายการ',
+            minWidth: 100,
+            special: value => moment(value).format("D MMMM YYYY")
+          },
           {
-            id: 'buyer',
+            id: 'user',
             label: 'ชื่อผู้ชื้อ',
             minWidth: 200,
             align: 'left',
+            special: value => value.name
           },
           {
-            id: 'transportWeek',
+            id: 'seller',
+            label: 'ร้านค้า',
+            minWidth: 200,
+            align: 'left',
+            special: value => value.shop_name
+          },
+          {
+            id: 'deliverweek',
             label: 'อาทิตย์ที่จัดส่ง',
+            minWidth: 80,
+            align: 'left',
+          },
+          {
+            id: 'times',
+            label: 'จัดส่งครั้งที่',
             minWidth: 80,
             align: 'left',
           },
@@ -90,16 +108,15 @@ class PackagePage extends React.Component {
               </Fab>
           },
         ];
-        this.rows = [];
     }
     componentDidMount(){
-      this.getPackages()
+      this.getPackages(10,1)
     }
 
-    getPackages(){
-      dataService.getPackages()
+    getPackages(limit, page){
+      dataService.getPackages(limit, page)
         .then(data => {
-          this.setState(() => ({ packageList:data}))
+          this.setState(() => ({ packageList:data.docs, dataCount: data.total}))
         })
         .catch(err=>{
           if(err===401){
@@ -109,18 +126,20 @@ class PackagePage extends React.Component {
     }
 
     statusDetail(e, orderNo){
-      this.packageDetail = dataService.getPackage(orderNo);
+      this.packageDetail = this.state.packageList.filter(data=>data._id===orderNo)[0];
       this.dialogDetailElement.current.changeStatus(this.packageDetail.status);
-      Object.assign(this.userDetail, dataService.getMockUserDetail(orderNo));
+      Object.assign(this.userDetail, this.packageDetail.user);
       this.openDialog(true);
     }
 
     handleChangePage(event,newPage){
       this.setState({page: newPage})
+      this.getPackages(this.state.rowsPerPage, newPage+1)
     }
 
     handleChangeRowsPerPage(event) {
       this.setState({page: 0,rowsPerPage:event.target.value})
+      this.getPackages(event.target.value, 1)
     }
 
     openDialog = () => {
@@ -129,11 +148,12 @@ class PackagePage extends React.Component {
 
     closeDialog = () => {
       this.setState({dialogState: false});
+      this.getPackages(this.state.rowsPerPage,this.state.page)
     }
 
     render() {
         const { classes } = this.props;
-        const { page, rowsPerPage, dialogState, userList } = this.state;
+        const { page, rowsPerPage, dialogState, dataCount, packageList } = this.state;
         const showStatus = true;
         const showOrderShipping = true;
 
@@ -167,14 +187,14 @@ class PackagePage extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
+                  {packageList.map((row,index) => {
                     return (
                       <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
-                        tabIndex={-1} key={row.orderNo} onClick={(e) => {this.statusDetail(e, row.orderNo)}}>
+                        tabIndex={-1} key={row._id+"-"+index} onClick={(e) => {this.statusDetail(e, row._id)}}>
                         {this.columns.map(column => {
                           const value = row[column.id];
                           return (
-                            <TableCell key={value} align={column.align}>
+                            <TableCell key={row._id+"-"+index+column.id} align={column.align}>
                               {column.format && typeof value === 'number' ? column.format(value)
                                 :
                                 column.special?
@@ -193,7 +213,7 @@ class PackagePage extends React.Component {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={this.rows.length}
+              count={dataCount}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{

@@ -125,7 +125,6 @@ class OrderPage extends React.Component {
 
     orderDetail = (e, orderCode) => {
       this.packageDetail = this.state.data.filter(data=>data._id===orderCode)[0];
-      console.log("packageDetail",this.packageDetail);
       this.dialogDetailElement.current.changeStatus(this.packageDetail.status);
       Object.assign(this.userDetail, this.packageDetail.user);
       this.openDialog();
@@ -136,7 +135,7 @@ class OrderPage extends React.Component {
 
     closeDialog = () => {
       this.setState({dialogState: false})
-      this.getOrders(10,1)
+      this.getOrders(this.state.rowsPerPage,this.state.page)
     }
 
     render() {

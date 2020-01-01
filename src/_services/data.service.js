@@ -1,6 +1,6 @@
 import { userService } from './user.service'
-function getPackages() {
-  return get(process.env.REACT_APP_GET_PACKAGES_DOMAIN)
+function getPackages(limit, page) {
+  return getLimitPage(process.env.REACT_APP_GET_PACKAGES_DOMAIN, limit, page)
 }
 
 function getOrders(limit, page){
