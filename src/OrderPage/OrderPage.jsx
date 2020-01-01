@@ -129,7 +129,7 @@ class OrderPage extends React.Component {
     orderDetail = (e, orderCode) => {
       this.packageDetail = dataService.getPackage(orderCode);
       this.dialogDetailElement.current.changeStatus(this.packageDetail.status);
-      Object.assign(this.userDetail, dataService.getUserDetail(orderCode));
+      Object.assign(this.userDetail, dataService.getMockUserDetail(orderCode));
       this.openDialog();
     }
     openDialog = () => {

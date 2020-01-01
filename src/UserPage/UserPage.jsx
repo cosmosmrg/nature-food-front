@@ -21,6 +21,7 @@ import Tab from '@material-ui/core/Tab';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import moment from 'moment'
 
 import { withStyles } from '@material-ui/styles';
 import DialogDetailComponent from '../DialogDetailComponent'
@@ -149,23 +150,20 @@ class UserPage extends React.Component {
     }
 
     openConfirmDialog(e, userId) {
-      this.setState({userSelected: dataService.getUser(userId)});
+      // this.setState({userSelected: dataService.getUser(userId)});
       this.setState({confirmDialog: true});
       e.preventDefault();
     }
 
     closeDialog(){
-      this.setState({confirmDialog: false});
-      this.setState({detailDialog: false});
+      this.setState({confirmDialog: false, detailDialog: false});
     }
 
     onTabChange(event, tabState){
       this.setState({tabState: tabState});
     }
 
-    customTemplate() {
-      const history = dataService.getHistory();
-      const lsItem = dataService.getListItems();
+    customTemplate(history, lsItem) {
       const { tabState } = this.state;
       const { classes } = this.props;
       function a11yProps(index) {
@@ -208,10 +206,10 @@ class UserPage extends React.Component {
                 <div className={classes.tabDetail}>
                   <Table aria-label="simple table" >
                     <TableBody>
-                      {history.map(row => (
-                        <TableRow role="checkbox" tabIndex={-1} key={row.historyId} >
-                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.date}</TableCell>
-                          <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.value}</TableCell>
+                      {history && history.map((row, index) => (
+                        <TableRow role="checkbox" tabIndex={-1} key={index} >
+                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{moment(row.date).format("Do MMM YYYY")}</TableCell>
+                          <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.amount}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -222,9 +220,9 @@ class UserPage extends React.Component {
               <div className={classes.tabDetail}>
                 <Table aria-label="simple table" >
                   <TableBody>
-                    {lsItem.map(row => (
-                      <TableRow role="checkbox" tabIndex={-1} key={row.listItemId}>
-                        <TableCell  style={{color: 'white', borderBottomWidth: '0px',  padding: '10px 0'}}>{row.value}</TableCell>
+                    {lsItem && lsItem.map((row, index) => (
+                      <TableRow role="checkbox" tabIndex={-1} key={index}>
+                        <TableCell  style={{color: 'white', borderBottomWidth: '0px',  padding: '10px 0'}}>{row.name} {row.size}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -241,9 +239,16 @@ class UserPage extends React.Component {
 
     detail(e, userId){
       if (e.defaultPrevented ) return;
-      this.setState({userDetail: dataService.getUserDetail('AA123')});
-      this.setState({detailDialog: true});
-      this.setState({tabState: 0});
+
+      dataService.getUserDetail(userId)
+      .then(data => {
+        this.setState(() => ({ userDetail: data, detailDialog: true, tabState: 0}))
+      })
+      .catch(err=>{
+        if(err===401){
+          this.props.history.push('/login')
+        }
+      })
     }
 
     confirmDialog() {
@@ -280,76 +285,79 @@ class UserPage extends React.Component {
 
         return (
           <>
-
-          <Paper className={classes.root}>
-          <DialogDetailComponent userDetail={userDetail} customTemplate={this.customTemplate} closeDialog={this.closeDialog} dialogState={detailDialog}/>
-
-              {this.confirmDialog()}
-              <Grid
-                  container
-                  direction="row"
-                  justify="space-between"
-                  alignItems="flex-start"
-                >
-                <Fab variant="extended" aria-label="delete" className={classes.fabTransparent} style={{backgroundColor:'transparent',color:'black'}} disabled>
-                  USER
-                </Fab>
-              </Grid>
-            <div className={classes.tableWrapper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {this.columns.map(column => (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.map((row,index) => {
-                    return (
-                      <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
-                        tabIndex={-1} key={row._id} onClick={(e) => this.detail(e, row._id)}>
-                        {this.columns.map(column => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align} >
-                              {column.format && typeof value === 'number' ? column.format(value)
-                                :
-                                column.special?
-                                  column.special(value)
-                                :
-                                value}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={this.state.dataCount}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                'aria-label': 'previous page',
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'next page',
-              }}
-              onChangePage={this.handleChangePage}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            <Paper className={classes.root}>
+            <DialogDetailComponent
+              userDetail={userDetail}
+              customTemplate={this.customTemplate(userDetail.history, userDetail.products)}
+              closeDialog={this.closeDialog}
+              dialogState={detailDialog}
             />
-          </Paper>
+            {this.confirmDialog()}
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="flex-start"
+            >
+              <Fab variant="extended" aria-label="delete" className={classes.fabTransparent} style={{backgroundColor:'transparent',color:'black'}} disabled>
+                USER
+              </Fab>
+            </Grid>
+              <div className={classes.tableWrapper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {this.columns.map(column => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {data.map((row,index) => {
+                      return (
+                        <TableRow hover role="checkbox" style={index%2===0 ? {backgroundColor:'#f2f2f2'} : {}}
+                          tabIndex={-1} key={row._id} onClick={(e) => this.detail(e, row._id)}>
+                          {this.columns.map(column => {
+                            const value = row[column.id];
+                            return (
+                              <TableCell key={column.id} align={column.align} >
+                                {column.format && typeof value === 'number' ? column.format(value)
+                                  :
+                                  column.special?
+                                    column.special(value)
+                                  :
+                                  value}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={this.state.dataCount}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                backIconButtonProps={{
+                  'aria-label': 'previous page',
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'next page',
+                }}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              />
+            </Paper>
           </>
         );
     }

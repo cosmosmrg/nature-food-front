@@ -123,7 +123,7 @@ class DialogDetailComponent extends React.Component {
                 </div>
                 <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
                   <Typography style={{marginRight: '30px'}}>ที่อยู่</Typography>
-                  <Typography>{userDetail.place}</Typography>
+                  <Typography>{userDetail.address}</Typography>
                 </div>
                 <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
                   <Typography style={{marginRight: '30px'}}>อีเมล์</Typography>
@@ -131,9 +131,9 @@ class DialogDetailComponent extends React.Component {
                 </div>
                 <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
                   <Typography style={{marginRight: '30px'}}>เบอร์</Typography>
-                  <Typography>{userDetail.phoneNumber}</Typography>
+                  <Typography>{userDetail.tel}</Typography>
                 </div>
-                {customTemplate && customTemplate()}
+                {customTemplate}
                 {orderDetail && this.renderOrderDetail(orderDetail, showOrderShipping)}
                 {showStatus && this.renderStatus(orderDetail, closeDialog)}
               </DialogContent>
