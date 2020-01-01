@@ -206,7 +206,6 @@ class ReportPage extends React.Component {
     getReports(startDate, stopDate){
       dataService.getReport(startDate, stopDate)
       .then(data => {
-        console.log('report data', data)
         this.setState(() => ({ data:data.top_sales, dataReport: dataService.getReportChart(data.labels, data.data)}))
       })
       .catch(err=>{
@@ -220,7 +219,6 @@ class ReportPage extends React.Component {
       const startDate = moment(`${this.datePicker.from.month}-${this.datePicker.from.year}`, 'MM-YYYY')
       const endDate = moment(`${this.datePicker.to.month}-${this.datePicker.to.year}`, 'MM-YYYY')
 
-      console.log(startDate, endDate)
       this.getReports(startDate, endDate)
     }
 
