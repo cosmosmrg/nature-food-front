@@ -68,7 +68,7 @@ function getReport(startDate, endDate) {
   if (!(startDate && endDate)) {
     query = ""
   } else {
-    query = `?start=${startDate.toISOString()}&stop=${endDate.toISOString()}`
+    query = `?start=${startDate}&stop=${endDate}`
   }
 
   return get(process.env.REACT_APP_GET_ADMIN_REPORT_DOMAIN + query)

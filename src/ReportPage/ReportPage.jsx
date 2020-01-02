@@ -103,7 +103,7 @@ class MonthPicker extends React.Component {
         if (typeof props.onChangecallBack === 'function') {
           this.onChangecallBack = props.onChangecallBack.bind(this);
         }
-        
+
     }
 
     componentWillReceiveProps(nextProps){
@@ -145,8 +145,6 @@ class MonthPicker extends React.Component {
         this.refs.pickRange.show()
     }
     handleRangeChange(value, text, listIndex) {
-      console.log(this.state.mrange);
-      
         //
     }
     handleRangeDismiss(value) {
@@ -162,7 +160,8 @@ class ReportPage extends React.Component {
             data:[],
             switchQuantityFilter: 'asc',
             switchValueFilter: 'asc',
-            dataReport: {}
+            dataReport: {},
+            total_sale:0
         };
         this.datePicker = {
           from: {
@@ -200,13 +199,24 @@ class ReportPage extends React.Component {
     }
 
     componentDidMount(){
-        this.getReports(moment(), moment())
+        const today = moment().utc(7)
+        this.getReports(today.toISOString(), today.toISOString())
+        const picker = {
+          month: today.month(),
+          year: today.year()
+        }
+        this.datePicker.from =picker;
+        this.datePicker.to =picker;
     }
 
     getReports(startDate, stopDate){
       dataService.getReport(startDate, stopDate)
       .then(data => {
-        this.setState(() => ({ data:data.top_sales, dataReport: dataService.getReportChart(data.labels, data.data)}))
+        this.setState(() =>
+        ({ data:data.top_sales,
+          dataReport: dataService.getReportChart(data.labels, data.data),
+          total_sale:data.total_sale
+        }))
       })
       .catch(err=>{
         if(err===401){
@@ -216,9 +226,8 @@ class ReportPage extends React.Component {
     }
 
     apply(){
-      const startDate = moment(`${this.datePicker.from.month}-${this.datePicker.from.year}`, 'MM-YYYY')
-      const endDate = moment(`${this.datePicker.to.month}-${this.datePicker.to.year}`, 'MM-YYYY')
-
+      const startDate = moment(`01-${this.datePicker.from.month}-${this.datePicker.from.year}`, 'DD-MM-YYYY').utc(7).toISOString()
+      const endDate = moment(`01-${this.datePicker.to.month}-${this.datePicker.to.year}`, 'DD-MM-YYYY').utc(7).toISOString()
       this.getReports(startDate, endDate)
     }
 
@@ -229,19 +238,6 @@ class ReportPage extends React.Component {
     filterReport = (switchQuantityFilter, switchValueFilter) => {
         const sort = _.orderBy(this.state.data, ['amount', 'totalprice'], [switchQuantityFilter, switchValueFilter])
         this.setState({data: sort, switchQuantityFilter, switchValueFilter })
-    }
-
-    sum(data){
-      function formatNumber(num) {
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-      }
-      if (data && data.datasets && data.datasets[0] && data.datasets[0] && data.datasets[0].data) {
-        let total = 0;
-        data.datasets[0].data.forEach(x=> total += x);
-        return formatNumber(total);
-      }
-      return 0;
-      
     }
     handleChangePage(event,newPage){
       this.setState({page: newPage})
@@ -255,7 +251,7 @@ class ReportPage extends React.Component {
     }
     render() {
         const { classes } = this.props;
-        const { switchQuantityFilter,switchValueFilter, data,  dataReport} = this.state;
+        const { switchQuantityFilter,switchValueFilter, data,  dataReport,total_sale} = this.state;
 
         return (
             <Paper className={classes.root}>
@@ -276,7 +272,7 @@ class ReportPage extends React.Component {
                 <Grid item xs={6} md={4} lm={4}>
                     <MonthPicker onChangecallBack={this.dataChange}/>
                     <h2>สรุปยอดขาย</h2>
-                    <h1>{this.sum(dataReport)}</h1>
+                    <h1>{total_sale}</h1>
                 </Grid>
                 <Grid item xs={2} md={1} lm={1}>
                     <div className="box" onClick={this._handleClick}
@@ -309,8 +305,8 @@ class ReportPage extends React.Component {
                     </div>
                 </Grid>
               </div>
-              
-              
+
+
             <div className={classes.tableWrapper}>
               <Table>
                 <TableHead>
