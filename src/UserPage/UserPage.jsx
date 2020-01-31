@@ -15,6 +15,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { dataService } from '../_services/data.service'
+import { createService } from '../_services/create.service'
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -106,7 +107,10 @@ class UserPage extends React.Component {
             minWidth: 120,
             align: 'center',
             special: value =>
-              <Fab size="small" onClick={(e) => this.openConfirmDialog(e, value)} variant="extended" aria-label="delete" style={{margin: '10px', backgroundColor: '#648eb5', color: 'white', textTransform: 'inherit', width: '100px'}}>
+              <Fab size="small" onClick={(e) => this.openConfirmDialog(e, value)}
+                variant="extended"
+                aria-label="delete"
+                style={{margin: '10px', backgroundColor: '#648eb5', color: 'white', textTransform: 'inherit', width: '100px'}}>
                 โอนเงิน
               </Fab>
           },
@@ -150,7 +154,8 @@ class UserPage extends React.Component {
     }
 
     openConfirmDialog(e, userId) {
-      // this.setState({userSelected: dataService.getUser(userId)});
+      const user = this.state.data.filter(x=>x._id === userId)[0]
+      this.setState({userSelected: user});
       this.setState({confirmDialog: true});
       e.preventDefault();
     }
@@ -208,7 +213,7 @@ class UserPage extends React.Component {
                     <TableBody>
                       {history && history.map((row, index) => (
                         <TableRow role="checkbox" tabIndex={-1} key={index} >
-                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{moment(row.date).format("D MMMM YYYY")}</TableCell>
+                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{moment(row.date).utc().format("D MMMM YYYY")}</TableCell>
                           <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.amount}</TableCell>
                         </TableRow>
                       ))}
@@ -251,6 +256,19 @@ class UserPage extends React.Component {
       })
     }
 
+    transfer(userId,balance,event){
+      createService.transferMoney(userId,balance)
+      .then(data => {
+        event.confirm();
+        this.getUsers()
+      })
+      .catch(err=>{
+        if(err===401){
+          this.props.history.push('/login')
+        }
+      })
+    }
+
     confirmDialog() {
       const { userSelected } = this.state;
       const event = this.confirmDialogEvent;
@@ -271,7 +289,7 @@ class UserPage extends React.Component {
             <Fab size="small" onClick={event.cancel} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#eb2a51', color: 'white', textTransform: 'inherit', width: '130px' }}>
               ยกเลิก
               </Fab>
-            <Fab size="small" onClick={event.confirm} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#0079ea', color: 'white', textTransform: 'inherit', width: '130px' }}>
+            <Fab size="small" onClick={(e)=>this.transfer(userSelected._id,userSelected.balance,event)} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#0079ea', color: 'white', textTransform: 'inherit', width: '130px' }}>
               ยืนยัน
               </Fab>
           </DialogActions>

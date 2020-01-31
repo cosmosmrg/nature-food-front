@@ -7,7 +7,8 @@ export const createService = {
     uploadImageProduct,
     approvalProduct,
     updateOrderStatus,
-    updateSlip
+    updateSlip,
+    transferMoney
 };
 
 function post(url,json) {
@@ -57,4 +58,27 @@ function updateOrderStatus(obj){
 
 function updateSlip(obj){
   return post(process.env.REACT_APP_POST_UPDATE_SLIP_DOMAIN, obj)
+}
+
+function transferMoney(userId,balance) {
+  const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
+  const url = process.env.REACT_APP_POST_TRANSFER_MONEY + `?id=${userId}&balance=${balance}`
+  const requestOptions = {
+      method: 'POST',
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': oauth2,
+      }
+  };
+  return axios(requestOptions)
+  .then(res => {
+    return res
+  })
+  .catch(error => {
+    if (error.response.status === 401) {
+      userService.logout();
+    }
+    throw new Error(error.response.data)
+  })
 }
