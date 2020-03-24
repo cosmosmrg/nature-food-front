@@ -7,6 +7,10 @@ function getOrders(limit, page){
   return getLimitPage(process.env.REACT_APP_GET_ORDERS_DOMAIN, limit, page)
 }
 
+function getUserAccount(limit, page){
+  return getLimitPage(process.env.REACT_APP_GET_USER_ACCOUNT_DOMAIN, limit, page)
+}
+
 function getUsers(limit, page) {
   return getLimitPage(process.env.REACT_APP_GET_ADMIN_USER_DOMAIN, limit, page)
 }
@@ -124,11 +128,19 @@ function getReportChart(date, data) {
   };
 }
 
-function getStatusData(){
-    return [
+function getStatusData(type){
+    const order = [
         { value: 'processing', label: 'processing' },
         { value: 'delivered', label: 'delivered' },
       ]
+    const account = [
+        { value: 'waiting', label: 'waiting' },
+        { value: 'pending', label: 'pending' },
+        { value: 'requested', label: 'requested' },
+        { value: 'reject', label: 'reject' },
+        { value: 'authorized', label: 'authorized' },
+      ]
+    return type === "order"? order : type === "account"? account:[]
 }
 
 function getHistory(userID) {
@@ -189,7 +201,8 @@ export const dataService = {
     getReport,
     getReportChart,
     getBankSlip,
-    getMockUserDetail
+    getMockUserDetail,
+    getUserAccount
 };
 
 function get(url){

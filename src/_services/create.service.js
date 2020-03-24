@@ -8,7 +8,8 @@ export const createService = {
     approvalProduct,
     updateOrderStatus,
     updateSlip,
-    transferMoney
+    transferMoney,
+    updateAccountStatus
 };
 
 function post(url,json) {
@@ -54,6 +55,10 @@ function uploadImageProduct(image){
 
 function updateOrderStatus(obj){
   return post(process.env.REACT_APP_UPDATE_ORDER_STATUS_DOMAIN, obj)
+}
+
+function updateAccountStatus(obj){
+  return post(process.env.REACT_APP_UPDATE_ACCOUNT_STATUS_DOMAIN, obj)
 }
 
 function updateSlip(obj){

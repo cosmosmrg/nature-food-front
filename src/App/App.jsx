@@ -10,6 +10,7 @@ import { ProductCreatePage } from '../ProductCreatePage';
 import { ProductApprovalPage } from '../ProductApprovalPage';
 import { OrderPage } from '../OrderPage';
 import { PackagePage } from '../PackagePage';
+import { AccountPage } from '../AccountPage';
 import { UserPage } from '../UserPage';
 import { BankSlipPage } from '../BankSlipPage';
 import { ReportPage } from '../ReportPage';
@@ -45,6 +46,7 @@ class App extends React.Component {
                                 <PrivateRoute exact path="/user" component={UserPage} title="user"/>
                                 <PrivateRoute exact path="/bank-slip" component={BankSlipPage} title="bank-slip"/>
                                 <PrivateRoute exact path="/report" component={ReportPage} title="report"/>
+                                <PrivateRoute exact path="/account" component={AccountPage} title="account"/>
                                 <Route path="/login" component={LoginPage} />
                             </div>
                         </Router>

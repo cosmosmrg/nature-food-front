@@ -135,9 +135,8 @@ const styles = theme => ({
 
 });
 
-const AvatarMenu = ({avatarOpen}) => {
-   const anchorRef = React.useRef(null);
-   return <Popper open={avatarOpen} anchorEl={anchorRef.current} transition disablePortal>
+const AvatarMenu = ({avatarOpen,anchorEl}) => {
+   return <Popper open={avatarOpen} anchorEl={anchorEl} transition disablePortal>
      {({ TransitionProps, placement }) => (
        <Grow
          {...TransitionProps}
@@ -166,12 +165,20 @@ class HomePage extends React.Component {
       super(props);
       this.state = {
           avatarOpen: false,
+          anchorEl: null
       };
       this.handleAvatar = this.handleAvatar.bind(this);
   }
 
   handleAvatar(e){
-    this.setState({avatarOpen: !this.state.avatarOpen})
+    console.log("click");
+    let newAnchorEl = this.state.anchorEl ? null : e.currentTarget
+    this.setState(
+      {
+        avatarOpen: !this.state.avatarOpen,
+        anchorEl:newAnchorEl
+      })
+
   }
 
 
@@ -199,6 +206,11 @@ class HomePage extends React.Component {
         icon: <InboxIcon />,
       },
       {
+        key: 'account',
+        text: 'ACCOUNT',
+        icon: <InboxIcon />,
+      },
+      {
         key: 'bank-slip',
         text: 'BANK SLIP',
         icon: <InboxIcon />,
@@ -222,7 +234,7 @@ class HomePage extends React.Component {
                   USER
                 <KeyBoardArrowDownIcon className={classes.rightIcon} />
               </Button>
-              <AvatarMenu avatarOpen={this.state.avatarOpen}/>
+              <AvatarMenu avatarOpen={this.state.avatarOpen} anchorEl={this.state.anchorEl}/>
             </div>
 
 

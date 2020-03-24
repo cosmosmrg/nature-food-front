@@ -13,6 +13,7 @@ import { dataService } from '../_services/data.service'
 import { createService } from '../_services/create.service'
 import Fab from '@material-ui/core/Fab';
 import moment from 'moment'
+import errorimage from '../static/errorimage.png';
 
 const DialogContent = withStyles(theme => ({
   root: {
@@ -72,21 +73,101 @@ class DialogDetailComponent extends React.Component {
         )
       }
 
+      renderAccountDetail(accountDetail) {
+        const banklist = [
+          {'code': '001', 'name': 'ธนาคารแห่งประเทศไทย'},
+          {'code': '002', 'name': 'ธนาคารกรุงเทพ จำกัด (มหาชน)'},
+          {'code': '004', 'name': 'ธนาคารกสิกรไทย จำกัด (มหาชน)'},
+          {'code': '005', 'name': 'เดอะรอยัลแบงค์อ๊อฟสกอตแลนด์ เอ็น .วี.'},
+          {'code': '006', 'name': 'ธนาคารกรุงไทย จำกัด (มหาชน)'},
+          {'code': '008', 'name': 'ธนาคารเจพี มอร์แกน เชส'},
+          {'code': '011', 'name': 'ธนาคารทหารไทย จำกัด (มหาชน)'},
+          {'code': '014', 'name': 'ธนาคารไทยพาณิชย์ จำกัด (มหาชน)'},
+          {'code': '017', 'name': 'ธนาคารซิต้ีแบงค์'},
+          {'code': '018', 'name': 'ชูมิโตโม มิตซุย แบงก้ิง คอร์ปอเรชั่น'},
+          {'code': '020', 'name': 'ธนาคารสแตนดาร์ด ชาร์เตอร์ด (ไทย) จำกัด'},
+          {'code': '022', 'name': 'ธนาคาร ซีไอเอ็ม บี ไทย จำกัด (มหาชน)'},
+          {'code': '024', 'name': 'ธนาคารยูโอบี จำกัด (มหาชน)'},
+          {'code': '025', 'name': 'ธนาคารกรุงศรีอยุธยา จำกัด (มหาชน)'},
+          {'code': '026', 'name': 'ธนาคาร เมกะ สากลพาณิชย์ จำกัด (มหาชน)'},
+          {'code': '027', 'name': 'ธนาคารแห่ง อเมริกา เนชั่นแนล แอสโซซิเอชั่น'},
+          {'code': '030', 'name': 'ธนาคารออมสิน'},
+          {'code': '031', 'name': 'ธนาคารฮ่องกงและเซ่ียงไฮแบ้งก้ิงคอร์ปอเรชั่น จำกัด'},
+          {'code': '032', 'name': 'ธนาคารดอยซ์แบงก์'},
+          {'code': '033', 'name': 'อาคารสงเคราะห์'},
+          {'code': '034', 'name': 'ธนาคารเพ่ือการเกษตรและสหกรณ์การเกษตร'},
+          {'code': '039', 'name': 'ธนาคารมิซูโฮ คอร์เปอเรท'},
+          {'code': '045', 'name': 'ธนาคาร บีเอ็น พี พารีบาส์'},
+          {'code': '052', 'name': 'ธนาคารแห่ง ประเทศจีน (ไทย) จำกัด (มหาชน)'},
+          {'code': '065', 'name': 'ธนาคารธนชาต จำกัด (มหาชน)'},
+          {'code': '066', 'name': 'ธนาคารอิสลามแห่ง ประเทศไทย'},
+          {'code': '067', 'name': 'ธนาคารทิส โก้ จำกัด (มหาชน)'},
+          {'code': '069', 'name': 'ธนาคารเกียรตินาคิน จำกัด (มหาชน)'},
+          {'code': '070', 'name': 'ธนาคารไอซีบีซี (ไทย) จำกัด (มหาชน)'},
+          {'code': '071', 'name': 'ธนาคารไทยเครดิต เพ่ือรายย่อย จำกัด (มหาชน)'},
+          {'code': '073', 'name': 'ธนาคารแลนด์ แอนด์ เฮ้าส์'},
+
+        ]
+        const getBankName = (bankcode) => {
+          const item = banklist.filter(bank => bank.code === bankcode)
+          return item.length === 0? 'ไม่พบข้อมูลธนาคาร' : item[0].name
+        }
+        const addDefaultSrc = (ev) => {
+          ev.target.src = errorimage
+        }
+        return (
+          <>
+            <div>
+              <div variant="h6" style={{marginBottom: '16px'}}>
+                <Typography style={{marginRight: '30px'}}>รายละเอียดบัญชี</Typography>
+              </div>
+              <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
+                <Typography style={{marginRight: '30px'}}>เลขที่บัญชี</Typography>
+                <Typography>{accountDetail.account}</Typography>
+              </div>
+              <div style={{marginBottom: '16px', display: 'flex', flexDirection: "row"}}>
+                <Typography style={{marginRight: '30px'}}>ธนาคาร</Typography>
+                <Typography>{accountDetail.bankcode} : {getBankName(accountDetail.bankcode)}</Typography>
+              </div>
+              <div style={{display: 'flex'}}>
+                <img style={{ maxWidth: 500, maxHeight: 500 }}
+                  alt={accountDetail.account}
+                  src={accountDetail.account_image}
+                  onError={addDefaultSrc}
+                />
+              </div>
+            </div>
+          </>
+        )
+      }
+
       changeStatus(state){
         this.setState({status: state,error:null})
       }
 
-      renderStatus(orderDetail, closeDialog) {
-        if(!orderDetail) return;
-        const statuses = dataService.getStatusData();
+      renderStatus(detail, closeDialog, type) {
+        if(!detail) return;
+        const statuses = dataService.getStatusData(type);
         const updateStatus = () => {
-          createService.updateOrderStatus({_id:orderDetail._id,status:this.state.status})
-            .then(order => {
-              closeDialog();
-            })
-            .catch(err => {
-              this.setState({error: err.message})
-            })
+          if(type === "order"){
+            createService.updateOrderStatus({_id:detail._id,status:this.state.status})
+              .then(order => {
+                closeDialog();
+              })
+              .catch(err => {
+                this.setState({error: err.message})
+              })
+          }
+          if(type === "account"){
+            createService.updateAccountStatus({_id:detail._id,status:this.state.status})
+              .then(order => {
+                closeDialog();
+              })
+              .catch(err => {
+                this.setState({error: err.message})
+              })
+          }
+
         }
 
         const handleChange = event => {
@@ -128,7 +209,7 @@ class DialogDetailComponent extends React.Component {
       }
 
       render() {
-        const { userDetail, customTemplate, dialogState, closeDialog, showStatus, orderDetail, showOrderShipping } = this.props
+        const { userDetail, customTemplate, dialogState, closeDialog, showStatus, orderDetail, showOrderShipping, accountDetail } = this.props
         const { error } = this.state
         return (
           <>
@@ -171,7 +252,9 @@ class DialogDetailComponent extends React.Component {
                 </div>
                 {customTemplate}
                 {orderDetail && this.renderOrderDetail(orderDetail, showOrderShipping)}
-                {showStatus && this.renderStatus(orderDetail, closeDialog)}
+                {accountDetail && this.renderAccountDetail(accountDetail)}
+                {showStatus && orderDetail && this.renderStatus(orderDetail, closeDialog, "order")}
+                {showStatus && accountDetail && this.renderStatus(accountDetail, closeDialog, "account")}
               </DialogContent>
             </Dialog>
           </>
