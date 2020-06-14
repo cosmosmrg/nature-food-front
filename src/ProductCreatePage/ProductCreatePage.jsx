@@ -9,7 +9,10 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import Checkbox from '@material-ui/core/Checkbox';
 import Badge from '@material-ui/core/Badge';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import errorimage from '../static/errorimage.png';
 import { dataService } from '../_services/data.service'
 import { createService } from '../_services/create.service'
@@ -42,9 +45,21 @@ const styles = theme => ({
     width: '30%',
     minWidth: 100,
   },
+  textFieldShippingMid: {
+    width: '100%',
+  },
+  textFieldShipping: {
+    width: '100%',
+    minWidth: 400,
+  },
   resize:{
     fontSize: 15,
-    height: theme.spacing(4)
+    height: theme.spacing(4),
+  },
+  resizeCenter:{
+    fontSize: 15,
+    height: theme.spacing(4),
+    textAlign: 'center'
   },
   formControl: {
     marginTop: theme.spacing(3),
@@ -65,6 +80,17 @@ class ProductCreatePage extends React.Component {
               seller:"",
               is_package:"true",
               status:"pending",
+              shipping:[
+                {check: false, carrier: 'FastFresh', duration: '', price: '', durationText: ''},
+                {check: false, carrier: 'ไปรษณีย์ไทย', duration: '', price: '', durationText: 'เวลาจัดส่ง ในประเทศ 3-5 วัน International 7-15 Days'},
+                {check: false, carrier: 'Kerry', duration: '', price: '', durationText: 'เวลาจัดส่ง เฉพาะในประเทศ 3-5 วัน'},
+                {check: false, carrier: 'NIM Express', duration: '', price: '', durationText: 'เวลาจัดส่ง เฉพาะในประเทศ 3-5 วัน'},
+                {check: false, carrier: 'Skootar', duration: '', price: '', durationText: ''},
+                {check: false, carrier: 'Line Man', duration: '', price: '', durationText: ''},
+                {check: false, carrier: 'Lalamove', duration: '', price: '', durationText: ''},
+                {check: false, carrier: 'Fedex & TNT', duration: '', price: '', durationText: 'เวลาจัดส่ง ในประเทศ 3-5 วัน International 5-10 Days'},
+                {check: false, carrier: 'DHL', duration: '', price: '', durationText: 'เวลาจัดส่ง ในประเทศ 3-5 วัน International 5-10 Days'},
+              ]
             },
             isError:false,
             image : errorimage
@@ -95,6 +121,16 @@ class ProductCreatePage extends React.Component {
           }
 
           data.is_package = data.is_package.toString()
+
+          const new_shipping = this.state.product.shipping
+
+          for(var i=0; i<new_shipping.length; ++i) {
+            const idx = data.shipping.findIndex((row)=> row.carrier===new_shipping[i].carrier)
+            if(idx>=0){
+              new_shipping[i]=data.shipping[idx]
+            }
+          }
+          data.shipping = new_shipping
 
           this.setState(() => ({ product:data, image: defaultImage}))
         })
@@ -129,6 +165,18 @@ class ProductCreatePage extends React.Component {
       const { target: { name, value } } = event;
       this.setState(() => ({ product:{...this.state.product,[name]: value }}))
     }
+
+    handleShippingChange(event,index){
+      const { target: { name, value } } = event;
+      console.log("handleShippingChange",name,value,index);
+      const {product} = this.state;
+      this.setState(() => ({
+        product:  {
+          ...product,
+          shipping: product.shipping.map((row,idx)=>{return idx===index? {...row,[name]:value}:row})
+        }}))
+    }
+
     addDefaultSrc(ev){
       ev.target.src = errorimage
     }
@@ -150,6 +198,7 @@ class ProductCreatePage extends React.Component {
 
       return Promise.resolve(data)
     }
+
     onSubmit(event){
       this.uploadImage()
       .then(result => {
@@ -165,6 +214,7 @@ class ProductCreatePage extends React.Component {
               image: result,
               // seller: product.seller,
               is_package: product.is_package,
+              shipping:product.shipping.filter(row=> row.check)
               // status: product.status,
             }
 
@@ -186,6 +236,7 @@ class ProductCreatePage extends React.Component {
               // seller: product.seller,
               is_package: product.is_package,
               status: product.status,
+              shipping:product.shipping.filter(row=> row.check)
             }
             createService.editProduct(preparedEditObj)
             .then(res =>{
@@ -200,10 +251,12 @@ class ProductCreatePage extends React.Component {
         }
       })
     }
+
     validateForm(){
       const {product} = this.state;
       return product !== null && product.name !== "" && product.size !== "" && product.price !== ""
     }
+
     handleBack(event){
       this.props.history.push('/product')
     }
@@ -211,6 +264,7 @@ class ProductCreatePage extends React.Component {
     removeImage(event){
       this.setState(() => ({ image: "" }))
     }
+
     fileSelectedHandler(event){
       event.persist()
       this.setState(() => ({ product:{...this.state.product,image: URL.createObjectURL(event.target.files[0])}}))
@@ -238,6 +292,103 @@ class ProductCreatePage extends React.Component {
         event.target.src = errorimage
       }
      }
+
+     onShippingCheckBoxClick (check, index) {
+       const {product} = this.state;
+       this.setState(()=>
+         ({
+           product:
+             {
+               ...product,
+               shipping: product.shipping.map((row,idx)=>{return idx===index? {...row,check}:row})
+             }
+           })
+       )
+     }
+
+    renderShippingPrice(){
+      const { classes } = this.props;
+      const { product } = this.state;
+      const html =
+      <FormControl component="fieldset" className={classes.formControl}>
+        <FormLabel component="legend" style={{color:'black'}}>การจัดส่ง</FormLabel>
+        <FormGroup>
+          {
+            product.shipping.map((row,index) => {
+              return (
+                <div key={"shipping-"+index}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={row.check}
+                      onChange={()=>this.onShippingCheckBoxClick(!row.check,index)}
+                      name={"shipping-"+index} />}
+                  label={row.carrier}
+                  />
+                  <div style={{marginLeft: 30}}>
+                    {
+                      row.durationText?
+                      <TextField
+                        id="durationText"
+                        className={classes.textFieldShipping}
+                        value={row.durationText}
+                        margin="normal"
+                        name="durationText"
+                        placeholder="3-5"
+                        InputProps={{
+                          classes: {
+                            input: classes.resize,
+                          },
+                        }}
+                        disabled={true}
+                      />
+                      :
+                      <TextField
+                        id="duration"
+                        className={classes.textFieldShippingMid}
+                        value={row.duration}
+                        margin="normal"
+                        name="duration"
+                        placeholder="3-5"
+                        InputProps={{
+                          classes: {
+                            input: classes.resizeCenter,
+                          },
+                          startAdornment: <InputAdornment position="start" style={{minWidth:100}}>เวลาจัดส่ง</InputAdornment>,
+                          endAdornment: <InputAdornment position="end">วัน</InputAdornment>,
+                        }}
+                        onChange={(ev)=>this.handleShippingChange(ev,index)}
+                      />
+                    }
+
+                    <FormGroup>
+                      <TextField
+                        id="price"
+                        className={classes.textFieldShippingMid}
+                        value={row.price||""}
+                        margin="normal"
+                        name="price"
+                        placeholder="100"
+                        InputProps={{
+                          classes: {
+                            input: classes.resizeCenter,
+                          },
+                          startAdornment: <InputAdornment position="start" style={{minWidth:100}}>ค่าจัดส่ง</InputAdornment>,
+                          endAdornment: <InputAdornment position="end">บาท</InputAdornment>,
+                        }}
+                        onChange={(ev)=>this.handleShippingChange(ev,index)}
+                      />
+                    </FormGroup>
+                  </div>
+
+                </div>
+              )
+            })
+          }
+        </FormGroup>
+      </FormControl>
+      return html
+    }
 
     render() {
         const { classes } = this.props;
@@ -319,6 +470,7 @@ class ProductCreatePage extends React.Component {
                         error={isError&&product.price===""}
                         helperText={isError&&product.price===""?"กรุณาใส่ราคา":""}
                       />
+                      {this.renderShippingPrice()}
                       <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend" style={{color:'black'}}>สถานะ</FormLabel>
                         <RadioGroup aria-label="status" name="status" value={product.status} onChange={this.handleChange}>
