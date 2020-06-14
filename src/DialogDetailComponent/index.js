@@ -60,9 +60,15 @@ class DialogDetailComponent extends React.Component {
               {showOrderShipping && this.renderOrderShipping(orderDetail)}
               <div style={{ paddingBottom: '10px', paddingTop: '10px', borderBottom: '1px solid white' }}>
                 {orderDetail.items.map((row,index) => {
-                  return (<Typography gutterBottom key={index}>
-                    {row.name} X {row.amount}
-                  </Typography>)
+                  return (
+                  <div>
+                    <Typography gutterBottom key={'ราคา'+index}>
+                      {row.name} ( {row.price} บาท) X {row.amount} = {row.price*row.amount} บาท
+                    </Typography>
+                    <Typography gutterBottom key={'ค่าส่ง'+index}>
+                      ค่าส่ง โดย {row.shipping.carrier} {row.shipping.price} บาท
+                    </Typography>
+                  </div>)
                 })}
               </div>
               <Typography style={{ margin: '16px 0 0 0' }}>
