@@ -65,9 +65,9 @@ function updateSlip(obj){
   return post(process.env.REACT_APP_POST_UPDATE_SLIP_DOMAIN, obj)
 }
 
-function transferMoney(userId,balance) {
+function transferMoney(userId,balance,amount) {
   const oauth2 = 'Bearer ' + JSON.parse(localStorage.getItem('user')).token;
-  const url = process.env.REACT_APP_POST_TRANSFER_MONEY + `?id=${userId}&balance=${balance}`
+  const url = process.env.REACT_APP_POST_TRANSFER_MONEY + `?id=${userId}&transfer_amount=${amount}&actual_amount=${balance}`
   const requestOptions = {
       method: 'POST',
       url,

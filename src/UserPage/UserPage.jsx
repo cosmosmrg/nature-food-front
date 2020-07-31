@@ -23,6 +23,8 @@ import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import moment from 'moment'
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 import { withStyles } from '@material-ui/styles';
 import DialogDetailComponent from '../DialogDetailComponent'
@@ -74,7 +76,9 @@ class UserPage extends React.Component {
             dataCount: 0,
             data:[],
             userSelected: {},
-            userDetail: {}
+            userDetail: {},
+            transferAmount:0,
+            transferError: null
         };
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
@@ -85,6 +89,8 @@ class UserPage extends React.Component {
         this.closeDialog = this.closeDialog.bind(this);
         this.customTemplate = this.customTemplate.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
+        this.handleTransferAmountChange = this.handleTransferAmountChange.bind(this);
+        this.resetTransferDialog = this.resetTransferDialog.bind(this);
 
         this.columns = [
           { id: 'email', label: 'อีเมล์', minWidth: 100 },
@@ -121,6 +127,11 @@ class UserPage extends React.Component {
       this.getUsers(10,1)
     }
 
+    handleTransferAmountChange(event){
+      const { target: { value } } = event;
+      this.setState(() => ({ transferAmount:value}))
+    }
+
     getUsers(limit, page){
       dataService.getUsers(limit, page)
         .then(data => {
@@ -155,7 +166,7 @@ class UserPage extends React.Component {
 
     openConfirmDialog(e, userId) {
       const user = this.state.data.filter(x=>x._id === userId)[0]
-      this.setState({userSelected: user});
+      this.setState({userSelected: user, transferAmount: user.balance });
       this.setState({confirmDialog: true});
       e.preventDefault();
     }
@@ -210,11 +221,19 @@ class UserPage extends React.Component {
             <TabPanel style={{backgroundColor: '#294b81', borderBottomRightRadius: '5px' ,borderBottomLeftRadius: '5px'}} value={tabState} index={0}>
                 <div className={classes.tabDetail}>
                   <Table aria-label="simple table" >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>วันที่ทำรายการ</TableCell>
+                        <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>ยอดโอน</TableCell>
+                        <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>ยอดเต็ม</TableCell>
+                      </TableRow>
+                    </TableHead>
                     <TableBody>
                       {history && history.map((row, index) => (
                         <TableRow role="checkbox" tabIndex={-1} key={index} >
-                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{moment(row.date).utc().format("D MMMM YYYY")}</TableCell>
-                          <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.amount}</TableCell>
+                          <TableCell style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{moment(row.date).utc().format("D MMMM YYYY HH:mm:ss")}</TableCell>
+                          <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.transfer_amount}</TableCell>
+                          <TableCell align="left" style={{color: 'white', borderBottomWidth: '0px', padding: '10px 0'}}>{row.actual_amount}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -256,42 +275,76 @@ class UserPage extends React.Component {
       })
     }
 
-    transfer(userId,balance,event){
-      createService.transferMoney(userId,balance)
-      .then(data => {
-        event.confirm();
-        this.getUsers()
-      })
-      .catch(err=>{
-        if(err===401){
-          this.props.history.push('/login')
+    transfer(userId,balance,amount,event){
+      if(amount>0){
+        if(amount>balance){
+          this.setState(() => ({ transferError: 'ยอดโอนมากกว่ายอดค้างโอน'}))
+        } else {
+          createService.transferMoney(userId,balance, amount)
+          .then(data => {
+            event.confirm();
+            this.getUsers()
+          })
+          .catch(err=>{
+            if(err===401){
+              this.props.history.push('/login')
+            } else {
+              this.setState(() => ({ transferError: err}))
+            }
+          })
         }
-      })
+      } else {
+        this.setState(() => ({ transferError: 'ยอดโอนต้องมากกว่า 0 บาท'}))
+      }
+    }
+    resetTransferDialog(event){
+      event.cancel();
+      const {userSelected} = this.state;
+      this.setState(() => ({ transferError: null, transferAmount: userSelected.balance }))
     }
 
     confirmDialog() {
-      const { userSelected } = this.state;
+      const { classes } = this.props;
+      const { userSelected, transferAmount, transferError } = this.state;
       const event = this.confirmDialogEvent;
       return (
         <Dialog
           open={this.state.confirmDialog}
           onClose={this.closeDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+          aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="alert-dialog-title">{"ยืนยันการโอนเงิน"}</DialogTitle>
+        <DialogTitle id="form-dialog-title">{`ยืนยันการโอนเงินให้ ${userSelected.name}`}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              ต้องการยืนยันการโอนเงินจำนวน {userSelected.balance} ให้ {userSelected.name} หรือไม่
-          </DialogContentText>
+              ต้องการโอนเงินยอด {userSelected.balance} บาท เข้า wallet เป็นจำนวนเงิน
+            </DialogContentText>
+            <TextField
+              autoFocus
+              id="standard-adornment-amount"
+              className={classes.textFieldShipping}
+              value={transferAmount}
+              margin="normal"
+              name="amount"
+              placeholder="ยอดโอน"
+              error={transferError!=null}
+              helperText={transferError}
+              InputProps={{
+                classes: {
+                  input: classes.resize,
+                },
+                startAdornment: <InputAdornment position="start">฿</InputAdornment>,
+              }}
+              fullWidth
+              onChange={this.handleTransferAmountChange}
+            />
           </DialogContent>
           <DialogActions style={{ justifyContent: 'flex-start' }}>
-            <Fab size="small" onClick={event.cancel} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#eb2a51', color: 'white', textTransform: 'inherit', width: '130px' }}>
+            <Fab size="small" onClick={(e) => this.resetTransferDialog(event)} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#eb2a51', color: 'white', textTransform: 'inherit', width: '130px' }}>
               ยกเลิก
               </Fab>
-            <Fab size="small" onClick={(e)=>this.transfer(userSelected._id,userSelected.balance,event)} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#0079ea', color: 'white', textTransform: 'inherit', width: '130px' }}>
+            <Fab size="small" onClick={(e)=>this.transfer(userSelected._id,userSelected.balance,transferAmount,event)} variant="extended" aria-label="delete" style={{ margin: '10px', backgroundColor: '#0079ea', color: 'white', textTransform: 'inherit', width: '130px' }}>
               ยืนยัน
-              </Fab>
+            </Fab>
           </DialogActions>
         </Dialog>
       );
@@ -302,11 +355,11 @@ class UserPage extends React.Component {
         const { page, rowsPerPage, data, detailDialog, userDetail } = this.state;
 
         return (
-          <>
+          <div>
             <Paper className={classes.root}>
             <DialogDetailComponent
               userDetail={userDetail}
-              customTemplate={this.customTemplate(userDetail.history, userDetail.products)}
+              customTemplate={this.customTemplate(userDetail.transfer_history, userDetail.products)}
               closeDialog={this.closeDialog}
               dialogState={detailDialog}
             />
@@ -376,7 +429,7 @@ class UserPage extends React.Component {
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
               />
             </Paper>
-          </>
+          </div>
         );
     }
 }
