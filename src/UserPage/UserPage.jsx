@@ -280,6 +280,7 @@ class UserPage extends React.Component {
         if(amount>balance){
           this.setState(() => ({ transferError: 'ยอดโอนมากกว่ายอดค้างโอน'}))
         } else {
+          this.setState(() => ({ transferError: null}))
           createService.transferMoney(userId,balance, amount)
           .then(data => {
             event.confirm();
