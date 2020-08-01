@@ -392,7 +392,7 @@ class ProductCreatePage extends React.Component {
                         onChange={(ev)=>this.handleShippingNameChange(ev,index)}
                       />
                       :
-                      <p>ไม่ใช่</p>
+                      null
                     }
                     {
                       row.durationText?
