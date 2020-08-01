@@ -16,6 +16,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import errorimage from '../static/errorimage.png';
 import { dataService } from '../_services/data.service'
 import { createService } from '../_services/create.service'
+import Button from '@material-ui/core/Button';
 
 import { withStyles } from '@material-ui/styles';
 
@@ -90,6 +91,8 @@ class ProductCreatePage extends React.Component {
                 {check: false, carrier: 'Lalamove', duration: '', price: '', durationText: ''},
                 {check: false, carrier: 'Fedex & TNT', duration: '', price: '', durationText: 'เวลาจัดส่ง ในประเทศ 3-5 วัน International 5-10 Days'},
                 {check: false, carrier: 'DHL', duration: '', price: '', durationText: 'เวลาจัดส่ง ในประเทศ 3-5 วัน International 5-10 Days'},
+                {check: false, carrier: 'Flash Express', duration: '', price: '', durationText: ''},
+                {check: false, carrier: 'J&T Express', duration: '', price: '', durationText: ''},
               ]
             },
             isError:false,
@@ -101,6 +104,7 @@ class ProductCreatePage extends React.Component {
         this.handleBack= this.handleBack.bind(this)
         this.removeImage = this.removeImage.bind(this)
         this.fileSelectedHandler = this.fileSelectedHandler.bind(this)
+        this.addNewShipping = this.addNewShipping.bind(this)
 
     }
     componentDidMount(){
@@ -123,11 +127,12 @@ class ProductCreatePage extends React.Component {
           data.is_package = data.is_package.toString()
 
           const new_shipping = this.state.product.shipping
-
-          for(var i=0; i<new_shipping.length; ++i) {
-            const idx = data.shipping.findIndex((row)=> row.carrier===new_shipping[i].carrier)
+          for(var i=0; i<data.shipping.length; ++i) {
+            const idx = new_shipping.findIndex((row)=> row.carrier===data.shipping[i].carrier)
             if(idx>=0){
-              new_shipping[i]=data.shipping[idx]
+              new_shipping[idx]=data.shipping[i]
+            } else {
+              new_shipping.push(data.shipping[i])
             }
           }
           data.shipping = new_shipping
@@ -168,12 +173,22 @@ class ProductCreatePage extends React.Component {
 
     handleShippingChange(event,index){
       const { target: { name, value } } = event;
-      console.log("handleShippingChange",name,value,index);
       const {product} = this.state;
       this.setState(() => ({
         product:  {
           ...product,
           shipping: product.shipping.map((row,idx)=>{return idx===index? {...row,[name]:value}:row})
+        }}))
+    }
+
+    handleShippingNameChange(event,index){
+      const { target: { value } } = event;
+      const {product} = this.state;
+      const new_value = value === ''? 'อื่นๆ':`อื่นๆ (${value})`
+      this.setState(() => ({
+        product:  {
+          ...product,
+          shipping: product.shipping.map((row,idx)=>{return idx===index? {...row,carrier:new_value}:row})
         }}))
     }
 
@@ -217,7 +232,6 @@ class ProductCreatePage extends React.Component {
               shipping:product.shipping.filter(row=> row.check)
               // status: product.status,
             }
-
             createService.createProduct(preparedCreateObj)
               .then(res =>{
                 if (!res) return
@@ -292,6 +306,31 @@ class ProductCreatePage extends React.Component {
         event.target.src = errorimage
       }
      }
+     addNewShipping(){
+       const {product} = this.state;
+       const shipping = {check: false, carrier: 'อื่นๆ', duration: '', price: '', durationText: ''}
+       this.setState(()=>
+         ({
+           product:
+             {
+               ...product,
+               shipping: [...product.shipping,shipping]
+             }
+           })
+       )
+     }
+     removeNewShipping(index){
+       const {product} = this.state;
+       this.setState(()=>
+         ({
+           product:
+             {
+               ...product,
+               shipping: [...product.shipping.slice(0,index),...product.shipping.slice(index+1)]
+             }
+           })
+       )
+     }
 
      onShippingCheckBoxClick (check, index) {
        const {product} = this.state;
@@ -327,6 +366,35 @@ class ProductCreatePage extends React.Component {
                   />
                   <div style={{marginLeft: 30}}>
                     {
+                      row.company_name!== undefined?
+                      <Button variant="contained" color="secondary"
+                        className={classes.fab} fullWidth
+                        onClick={()=>this.removeNewShipping(index)}>
+                        ลบขนส่ง
+                      </Button>
+                      :null
+                    }
+                    {
+                      row.carrier.startsWith("อื่นๆ")?
+                      <TextField
+                        id="carrier"
+                        className={classes.textFieldShippingMid}
+                        value={row.carrier.length>=7?row.carrier.substring(7,row.carrier.length-1):''}
+                        margin="normal"
+                        name="carrier"
+                        placeholder="ชื่อบริษัทขนส่ง"
+                        InputProps={{
+                          classes: {
+                            input: classes.resizeCenter,
+                          },
+                          startAdornment: <InputAdornment position="start" style={{minWidth:100}}>ชื่อบริษัทขนส่ง</InputAdornment>,
+                        }}
+                        onChange={(ev)=>this.handleShippingNameChange(ev,index)}
+                      />
+                      :
+                      <p>ไม่ใช่</p>
+                    }
+                    {
                       row.durationText?
                       <TextField
                         id="durationText"
@@ -360,7 +428,6 @@ class ProductCreatePage extends React.Component {
                         onChange={(ev)=>this.handleShippingChange(ev,index)}
                       />
                     }
-
                     <FormGroup>
                       <TextField
                         id="price"
@@ -385,6 +452,11 @@ class ProductCreatePage extends React.Component {
               )
             })
           }
+          <Button variant="contained" color="primary"
+            className={classes.fab} style={{backgroundColor:'#0079EA'}}
+            onClick={this.addNewShipping}>
+            เพิ่มขนส่ง
+          </Button>
         </FormGroup>
       </FormControl>
       return html
