@@ -366,7 +366,7 @@ class ProductCreatePage extends React.Component {
                   />
                   <div style={{marginLeft: 30}}>
                     {
-                      row.company_name!== undefined?
+                      row.carrier.startsWith("อื่นๆ")?
                       <Button variant="contained" color="secondary"
                         className={classes.fab} fullWidth
                         onClick={()=>this.removeNewShipping(index)}>
