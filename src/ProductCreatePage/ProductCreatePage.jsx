@@ -77,6 +77,7 @@ class ProductCreatePage extends React.Component {
               name:"",
               size:"",
               price:"",
+              detail:"",
               image: errorimage,
               seller:"",
               is_package:"true",
@@ -228,6 +229,7 @@ class ProductCreatePage extends React.Component {
               price: product.price,
               image: result,
               // seller: product.seller,
+              detail: product.detail,
               is_package: product.is_package,
               shipping:product.shipping.filter(row=> row.check)
               // status: product.status,
@@ -248,6 +250,7 @@ class ProductCreatePage extends React.Component {
               price: product.price,
               image: result,
               // seller: product.seller,
+              detail: product.detail,
               is_package: product.is_package,
               status: product.status,
               shipping:product.shipping.filter(row=> row.check)
@@ -541,6 +544,20 @@ class ProductCreatePage extends React.Component {
                         onChange={this.handleChange}
                         error={isError&&product.price===""}
                         helperText={isError&&product.price===""?"กรุณาใส่ราคา":""}
+                      />
+                      <TextField
+                        id="detail"
+                        className={classes.textField}
+                        value={product.detail||""}
+                        margin="normal"
+                        name="detail"
+                        placeholder="คำอธิบายข้อมูลสินค้า"
+                        InputProps={{
+                          classes: {
+                            input: classes.resize,
+                          },
+                        }}
+                        onChange={this.handleChange}
                       />
                       {this.renderShippingPrice()}
                       <FormControl component="fieldset" className={classes.formControl}>
