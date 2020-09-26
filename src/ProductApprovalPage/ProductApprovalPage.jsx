@@ -119,7 +119,7 @@ class ProductApprovalPage extends React.Component {
           label: 'วันที่บันทึกสินค้า',
           minWidth: 150,
           align: 'center',
-          special: value => moment(value).format("D/MM/YYYY HH:MM:SS")
+          special: value => moment(value).format("D/MM/YYYY HH:mm:ss")
         },
         {
           id: '_id',
