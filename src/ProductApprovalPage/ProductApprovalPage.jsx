@@ -13,6 +13,7 @@ import { dataService } from '../_services/data.service'
 import { createService } from '../_services/create.service'
 
 import { withStyles } from '@material-ui/styles';
+import moment from 'moment'
 
 const styles = theme => ({
   root: {
@@ -39,24 +40,24 @@ const styles = theme => ({
   }
 });
 
-function createData(name, size, price, seller,status) {
-  return { name, size, price, seller,status };
-}
+// function createData(name, size, price, seller,status) {
+//   return { name, size, price, seller,status };
+// }
 
-const rows = [
-  createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
-  createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-  createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
-  createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-  createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
-  createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-  createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
-  createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-  createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
-  createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
-  createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
-  createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
-];
+// const rows = [
+//   createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
+//   createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
+//   createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
+//   createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
+//   createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
+//   createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
+//   createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
+//   createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
+//   createData('ข้าวหอมมะลิ', '1 กิโลกรัม', 50, 'Nature Food', '-'),
+//   createData('ข้าวหอมมะลิ', '5 กิโลกรัม', 250, 'Nature Food', 'Subscribe'),
+//   createData('ข้าวโพดหวาน', '5 กิโลกรัม', 250, 'Corn Mill Farm', '-'),
+//   createData('นมข้าวโพดหวาน', '250 ml', 25, 'Corn Mill Farm', 'Subscribe'),
+// ];
 
 class ProductApprovalPage extends React.Component {
     constructor(props) {
@@ -81,8 +82,8 @@ class ProductApprovalPage extends React.Component {
         {
           id: 'price',
           label: 'ราคา',
-          minWidth: 120,
-          align: 'left',
+          minWidth: 100,
+          align: 'right',
           format: value => value.toLocaleString()+" บาท"
         },
         {
@@ -112,6 +113,13 @@ class ProductApprovalPage extends React.Component {
               package
             </Fab>
             :<h5>-</h5>,
+        },
+        {
+          id: 'created_date',
+          label: 'วันที่บันทึกสินค้า',
+          minWidth: 150,
+          align: 'center',
+          special: value => moment(value).format("D/MM/YYYY HH:MM:SS")
         },
         {
           id: '_id',
